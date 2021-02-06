@@ -14,6 +14,8 @@ export const environment = {
     resize: 'resizeContainer',
   },
 
+  instructionUrl: 'https://github.com/kkoripl/NaryaKeyPointsDatasetCreator/blob/master/README.md',
+
   validImageMimeTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/bmp'],
 
   xmlTags: {

@@ -35,7 +35,8 @@ export class AppComponent implements OnInit{
   templateConfig = environment.templateImg;
   imageContainer = environment.containers.image;
   templateContainer = environment.containers.template;
-  resizeContainer =    environment.containers.resize;
+  resizeContainer = environment.containers.resize;
+  instructionUrl = environment.instructionUrl;
 
   keyPointsDisplayedColumns: string[] = ['id', 'x', 'y', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
@@ -229,6 +230,10 @@ export class AppComponent implements OnInit{
   private setExpandedImage(imageRowData: any, imageRowId: number) {
     this.expandedImage = this.expandedImage === imageRowData ? null : imageRowData;
     this.expandedImageId = this.expandedImageId === imageRowId ? null : imageRowId;
+  }
+
+  navigateToInstruction(){
+      window.open(this.instructionUrl, '_blank');
   }
 
   private deleteElementFromList(list, elementToDelete) {

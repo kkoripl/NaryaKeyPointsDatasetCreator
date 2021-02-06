@@ -2,6 +2,7 @@
   <button mat-button type="button" (click)="generateData()" disabled="{{missingData()}}">Generate data file</button>
   <input style="display: none" type="file" multiple (change)="validateAndUpload($event)" #fileInput>
   <button mat-button type="button" (click)="fileInput.click()">Select images</button>
+  <button mat-button type="button" (click)="navigateToInstruction()">Instruction</button>
   <div class="spacer"></div>
   <mat-form-field class="input-headline">
     <mat-label>Image width</mat-label>
