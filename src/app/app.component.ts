@@ -1,16 +1,14 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FilesService} from './service/files.service';
 import {environment} from '../environments/environment';
 import {PathsGeneratorService} from './service/paths.generator.service';
-import {XmlFileCreatorService} from './service/xml-file-creator.service';
 import {Keypoint} from './model/keypoint';
 import {ImageData} from './model/image-data';
 import {KonvaPainterService} from './service/konva-painter.service';
-import Konva from 'konva';
 import {MatTableDataSource} from '@angular/material/table';
 import {NotificationService} from './service/notification.service';
-import {ZipFileCreatorService} from './service/zip-file-creator.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import {SpinnerService} from './service/spinner.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +18,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
     trigger('detailExpand', [
       state('collapsed', style({height: '0px', minHeight: '0'})),
       state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('1000ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+      transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ]
 })
@@ -28,6 +26,7 @@ export class AppComponent implements OnInit{
   fileService: FilesService;
   konvaPainter: KonvaPainterService;
   notifications: NotificationService;
+  spinnerService: SpinnerService;
 
   imgHeight = environment.defaults.imgHeight;
   imgWidth = environment.defaults.imgWidth;
@@ -52,10 +51,12 @@ export class AppComponent implements OnInit{
 
   constructor(fileUploaderService: FilesService,
               konvaPainterService: KonvaPainterService,
-              notificationService: NotificationService) {
+              notificationService: NotificationService,
+              spinnerService: SpinnerService) {
     this.fileService = fileUploaderService;
     this.konvaPainter = konvaPainterService;
     this.notifications = notificationService;
+    this.spinnerService = spinnerService;
   }
 
   ngOnInit(): void {
@@ -73,12 +74,15 @@ export class AppComponent implements OnInit{
   }
 
   private uploadImages(event) {
+    const spinnerRef = this.spinnerService.start('Loading pictures...');
     this.fileService.uploadFiles(event);
     const newImagesNames = this.fileService.getNewFilesNames(event);
     this.enlargeImageTableData(newImagesNames, this.imagesTableData);
-    this.enlargeImageData(newImagesNames).then(() => {});
     this.enlargeKeyPointsArray(newImagesNames.length, this.keyPoints);
     this.enlargeKeyPointsTableData(newImagesNames, this.keyPointsTableData);
+    this.enlargeImageData(newImagesNames).then(() => {
+      this.spinnerService.stop(spinnerRef);
+    });
   }
 
   private makeImgData(imageName: string, imageIdx: number): Promise<ImageData> {
@@ -249,7 +253,7 @@ export class AppComponent implements OnInit{
       size += array[i].length;
     }
     return size;
-}
+  }
 }
 
 
