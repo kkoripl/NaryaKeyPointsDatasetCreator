@@ -9,6 +9,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {NotificationService} from './service/notification.service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {SpinnerService} from './service/spinner.service';
+import {UtilsService} from './service/utils.service';
 
 @Component({
   selector: 'app-root',
@@ -31,6 +32,7 @@ export class AppComponent implements OnInit{
   imgHeight = environment.defaults.imgHeight;
   imgWidth = environment.defaults.imgWidth;
   imgDirectory = environment.defaults.imgDirectory;
+  zipFileName = environment.defaults.zipFile;
   templateConfig = environment.templateImg;
   imageContainer = environment.containers.image;
   templateContainer = environment.containers.template;
@@ -156,7 +158,7 @@ export class AppComponent implements OnInit{
   }
 
   deleteKeypoint(keypointToDelete: Keypoint, imageIdx: number) {
-    this.keyPoints[imageIdx] = this.deleteElementFromList(this.keyPoints[imageIdx], keypointToDelete);
+    this.keyPoints[imageIdx] = UtilsService.deleteElementFromList(this.keyPoints[imageIdx], keypointToDelete);
     if (keypointToDelete === this.selectedKeyPoint) {
       this.resetSelection();
     }
@@ -166,7 +168,7 @@ export class AppComponent implements OnInit{
   }
 
   generateData() {
-    this.fileService.generateDataFiles(this.imgData, this.keyPoints, this.imgDirectory);
+    this.fileService.generateDataFiles(this.imgData, this.keyPoints, this.zipFileName, this.imgDirectory);
   }
 
   imagesLoadedAlready(): boolean {
@@ -175,7 +177,7 @@ export class AppComponent implements OnInit{
 
   missingData(): boolean {
     return (this.imgData.length === 0 || this.imgHeight === undefined || this.imgWidth === undefined || this.imgDirectory === undefined ||
-      this.count2dElements(this.keyPoints) === 0 || this.keyPoints.filter((keyPoints1d: []) =>
+      UtilsService.count2dElements(this.keyPoints) === 0 || this.keyPoints.filter((keyPoints1d: []) =>
         keyPoints1d.filter((keyPoint: Keypoint) => (keyPoint.id === undefined || keyPoint.id === null)).length !== 0
       ).length !== 0);
   }
@@ -238,21 +240,6 @@ export class AppComponent implements OnInit{
 
   navigateToInstruction(){
       window.open(this.instructionUrl, '_blank');
-  }
-
-  private deleteElementFromList(list, elementToDelete) {
-    const elementIdx = list.findIndex(listElement => listElement === elementToDelete);
-    list.splice(elementIdx, 1);
-    return list;
-  }
-
-  private count2dElements(array: any[][]): number {
-    let size = 0;
-    // tslint:disable-next-line:prefer-for-of
-    for (let i = 0; i < array.length; i++) {
-      size += array[i].length;
-    }
-    return size;
   }
 }
 

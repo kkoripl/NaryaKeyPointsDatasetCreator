@@ -8,6 +8,7 @@ import {XmlFile} from '../model/xml-file';
 import {ImgFile} from '../model/img-file';
 import {ZipFileCreatorService} from './zip-file-creator.service';
 import {environment} from '../../environments/environment';
+import {UtilsService} from './utils.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class FilesService {
   private xmlCreator: XmlFileCreatorService;
 
   private validImageTypes = environment.validImageMimeTypes;
+  private statsFileHeader = environment.defaults.statsFileHeader;
 
   constructor(xmlFileCreatorService: XmlFileCreatorService) {
     this.fileReader = new FileReader();
@@ -96,10 +98,11 @@ export class FilesService {
     return filenames;
   }
 
-  generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], imgDirectoryName: string) {
+  generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string) {
     const xmlFiles = this.createXmlFiles(imgDatas, keyPoints);
     const imgFiles = this.createImageFiles(imgDatas);
-    ZipFileCreatorService.generateZip(xmlFiles, imgFiles, imgDirectoryName);
+    const statsFileContent = this.createStatsFileContent(keyPoints);
+    ZipFileCreatorService.generateZip(xmlFiles, imgFiles, statsFileContent, zipFileName, imgDirectoryName);
   }
 
   private createImageFiles(imageDatas: ImageData[]): ImgFile[] {
@@ -121,6 +124,17 @@ export class FilesService {
 
   private createXmlFile(imgData: ImageData, keyPoints: Keypoint[]): XmlFile {
     return this.xmlCreator.createXmlFile(imgData, keyPoints);
+  }
+
+  private createStatsFileContent(keyPoints: Keypoint[][]): string {
+    const counts = UtilsService.countKeyPointsTypes(keyPoints);
+    const header = 'Key point ID / Count\n';
+    return this.statsFileHeader + JSON.stringify(counts)
+      .replace(/:/gi, '\t - \t')
+      .replace(/,/gi, '\n')
+      .replace(/{/gi, '')
+      .replace(/}/gi, '')
+      .replace(/\"/gi, '');
   }
 
   private fromDataUrlToBlob(dataUrl: string): Blob {

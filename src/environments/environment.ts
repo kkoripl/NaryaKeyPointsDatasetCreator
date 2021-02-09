@@ -9,7 +9,9 @@ export const environment = {
   defaults: {
     imgWidth: 512,
     imgHeight: 512,
-    imgDirectory: 'JPEGImages'
+    imgDirectory: 'JPEGImages',
+    zipFile: 'data',
+    statsFileHeader: 'Key point ID / Count\n'
   },
 
   containers: {

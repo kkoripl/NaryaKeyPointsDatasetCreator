@@ -16,6 +16,10 @@
     <mat-label>Image directory</mat-label>
     <input id="imgDirectory" matInput type="text" placeholder="Upload image directory" [(ngModel)]="imgDirectory" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
+  <mat-form-field class="input-headline">
+    <mat-label>Generated .zip name</mat-label>
+    <input id="zipFile" matInput type="text" placeholder="Zip file name" [(ngModel)]="zipFileName">
+  </mat-form-field>
 </mat-toolbar>
 
 <div class="main">

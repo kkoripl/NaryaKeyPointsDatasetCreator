@@ -1,0 +1,30 @@
+import {Keypoint} from '../model/keypoint';
+
+export class UtilsService {
+
+  static deleteElementFromList(list, elementToDelete) {
+    const elementIdx = list.findIndex(listElement => listElement === elementToDelete);
+    list.splice(elementIdx, 1);
+    return list;
+  }
+
+  static count2dElements(array: any[][]): number {
+    let size = 0;
+    // tslint:disable-next-line:prefer-for-of
+    for (let i = 0; i < array.length; i++) {
+      size += array[i].length;
+    }
+    return size;
+  }
+
+  static countKeyPointsTypes(keyPoints: Keypoint[][]) {
+    const counts = {};
+    for (let i = 0; i < keyPoints.length; i++) {
+      for (let j = 0; j < keyPoints[i].length; j++) {
+        counts[keyPoints[i][j].id] = 1 + (counts[keyPoints[i][j].id] || 0);
+      }
+    }
+
+    return counts;
+  }
+}

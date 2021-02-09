@@ -5,7 +5,9 @@ export const environment = {
   defaults: {
     imgWidth: 512,
     imgHeight: 512,
-    imgDirectory: 'JPEGImages'
+    imgDirectory: 'JPEGImages',
+    zipFile: 'data',
+    statsFileHeader: 'Key point ID / Count\n'
   },
 
   containers: {
@@ -49,7 +51,7 @@ export const environment = {
     width: 512,
     height: 397
   },
-  draw : {
+  draw: {
     texts: {
       picturePlaceholderConfig: {
         x: 0,
