@@ -44,7 +44,7 @@ export class FilesService {
   }
 
   removeFile(fileIdx: number) {
-    this.removeFromFileList(fileIdx, this.imageFiles);
+    this.imageFiles = this.removeFromFileList(fileIdx, this.imageFiles);
   }
 
   private removeFromFileList(fileIdx: number, fileList: FileList) {
@@ -54,7 +54,7 @@ export class FilesService {
         df.items.add(fileList.item(i));
       }
     }
-    fileList = df.files;
+    return df.files;
   }
 
   private mergeFileLists(existingFiles: FileList, newFiles: FileList): FileList {
