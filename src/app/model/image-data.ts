@@ -14,6 +14,10 @@ export class ImageData {
     this.height = height;
   }
 
+  getFilenameWithJpgExtension(): string {
+    return this.getFilenameWoExtension() + '.jpg';
+  }
+
   getFilenameWoExtension(): string {
     return this.filename.split('.')[0];
   }

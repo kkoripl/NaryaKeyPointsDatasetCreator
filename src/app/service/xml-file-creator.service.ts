@@ -30,7 +30,7 @@ export class XmlFileCreatorService {
   private createImageData(xmlWriter: any, imageData: ImageData) {
     xmlWriter
       .writeElement(this.imgDataTags.directory, imageData.directory)
-      .writeElement(this.imgDataTags.filename, imageData.filename)
+      .writeElement(this.imgDataTags.filename, imageData.getFilenameWithJpgExtension())
       .startElement(this.imgDataTags.size)
         .writeElement(this.imgDataTags.width, imageData.width)
         .writeElement(this.imgDataTags.height, imageData.height)
