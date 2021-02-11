@@ -143,6 +143,7 @@ export class AppComponent implements OnInit{
     imagesTableData.splice(imageIdx, 1);
     this.imagesTableData.data = imagesTableData;
     this.fileService.removeFile(imageIdx);
+    this.resetExpanded();
   }
 
   addNewKeyPoint(point: any, imageIdx: number) {
@@ -191,7 +192,6 @@ export class AppComponent implements OnInit{
     this.drawTemplate((this.templateContainer + imageRowIdx), this.templateConfig.width, this.templateConfig.height);
     this.drawTemplateKeyPoints(this.keyPoints[imageRowIdx]);
     this.setExpandedImage(imageRowData, imageRowIdx);
-    this.resetSelection();
   }
 
   private drawPicture(containerName: string, imageUrl: string, width: number, height: number) {
@@ -238,9 +238,12 @@ export class AppComponent implements OnInit{
     this.expandedImageId = this.expandedImageId === imageRowId ? null : imageRowId;
   }
 
+  private resetExpanded() {
+    this.expandedImage = undefined;
+    this.expandedImageId = undefined;
+  }
+
   navigateToInstruction(){
       window.open(this.instructionUrl, '_blank');
   }
 }
-
-
