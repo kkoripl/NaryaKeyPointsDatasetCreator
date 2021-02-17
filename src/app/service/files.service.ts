@@ -108,7 +108,7 @@ export class FilesService {
   private createImageFiles(imageDatas: ImageData[]): ImgFile[] {
     const imageFiles = [];
     for (const imageData of imageDatas) {
-        imageFiles.push(new ImgFile(imageData.getFilenameWithJpgExtension(), this.fromDataUrlToBlob(imageData.dataUrl)));
+        imageFiles.push(new ImgFile(imageData.filename, this.fromDataUrlToBlob(imageData.dataUrl)));
     }
 
     return imageFiles;
