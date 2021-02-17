@@ -122,8 +122,9 @@ export class AppComponent implements OnInit{
   }
 
   private async enlargeImageData(imagesNames: string[]) {
+    const startIdx = this.imgData.length;
     for (let i = 0; i < imagesNames.length; i++) {
-      const data = await this.makeImgData(imagesNames[i], i);
+      const data = await this.makeImgData(imagesNames[i], (startIdx + i));
       this.imgData.push(data);
     }
   }

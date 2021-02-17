@@ -35,11 +35,11 @@ export class FilesService {
     return valid;
   }
 
-  uploadFiles(event) {
+  uploadFiles($event) {
     if (this.imageFiles === undefined) {
-      this.imageFiles = event.target.files;
+      this.imageFiles = this.mergeFileLists((new DataTransfer()).files, $event.target.files);
     } else {
-      this.imageFiles = this.mergeFileLists(this.imageFiles, event.target.files);
+      this.imageFiles = this.mergeFileLists(this.imageFiles, $event.target.files);
     }
   }
 
