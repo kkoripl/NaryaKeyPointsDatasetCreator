@@ -15,7 +15,7 @@ export class ImageData {
   }
 
   getFilenameWoExtension(): string {
-    return this.filename.split('.')[0];
+    return this.filename.split('.').slice(0, -1).join('.');
   }
 
   getDataUrlWoBase64(): string {
