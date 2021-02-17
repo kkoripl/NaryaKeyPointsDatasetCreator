@@ -73,7 +73,7 @@ export const environment = {
       coordsConfig: {
         padding: 2,
         fontFamily: 'Calibri',
-        fontSize: 24,
+        fontSize: 14,
         text: '',
         fill: 'white',
       },
