@@ -98,7 +98,7 @@ export class FilesService {
     return filenames;
   }
 
-  generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string) {
+  async generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string) {
     const xmlFiles = this.createXmlFiles(imgDatas, keyPoints);
     const imgFiles = this.createImageFiles(imgDatas);
     const statsFileContent = this.createStatsFileContent(keyPoints);

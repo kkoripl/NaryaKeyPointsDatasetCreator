@@ -170,7 +170,11 @@ export class AppComponent implements OnInit{
   }
 
   generateData() {
-    this.fileService.generateDataFiles(this.imgData, this.keyPoints, this.zipFileName, this.imgDirectory);
+    const spinnerRef = this.spinnerService.start('Generating data...');
+    this.fileService.generateDataFiles(this.imgData, this.keyPoints, this.zipFileName, this.imgDirectory)
+      .then(() => {
+        this.spinnerService.stop(spinnerRef);
+      });
   }
 
   imagesLoadedAlready(): boolean {
