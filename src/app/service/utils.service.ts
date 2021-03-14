@@ -1,6 +1,9 @@
 import {Keypoint} from '../model/keypoint';
+import {environment} from '../../environments/environment';
 
 export class UtilsService {
+
+  allKeypointsIds = environment.templateKeyPoints.map((keypoint) => keypoint.id);
 
   static deleteElementFromList(list, elementToDelete) {
     const elementIdx = list.findIndex(listElement => listElement === elementToDelete);
@@ -18,10 +21,16 @@ export class UtilsService {
   }
 
   static countKeyPointsTypes(keyPoints: Keypoint[][]) {
+    const allKeypointsIds = environment.templateKeyPoints.map((keypoint) => keypoint.id);
     const counts = {};
+
+    for (const keyPointId in allKeypointsIds) {
+      counts[keyPointId] = 0;
+    }
+
     for (let i = 0; i < keyPoints.length; i++) {
       for (let j = 0; j < keyPoints[i].length; j++) {
-        counts[keyPoints[i][j].id] = 1 + (counts[keyPoints[i][j].id] || 0);
+        counts[keyPoints[i][j].id] = 1 + counts[keyPoints[i][j].id];
       }
     }
 
