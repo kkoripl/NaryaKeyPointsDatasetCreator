@@ -36,15 +36,15 @@ export class KonvaPainterService {
     });
   }
 
-  drawPicture(containerName: string, imageUrl: string, width: number, height: number, clickCallback) {
+  drawPicture(containerName: string, imageUrl: string, width: number, height: number, widthFactor: number, heightFactor: number, clickCallback) {
     this.imageStage = this.createStage(containerName, width, height);
     const layer = new Konva.Layer();
     const text = this.createText(this.coordsTextConfig);
     const label = this.createLabel(text);
     this.loadImage(imageUrl, width, height, (image: Konva.Image) => {
-      image.on('mousemove', () => this.showMousePosition(this.imageStage, layer, text));
+      image.on('mousemove', () => this.showMousePosition(this.imageStage, layer, text, widthFactor, heightFactor));
       image.on('mouseout', () => this.clearMousePosition(layer, text));
-      image.on('click', () => clickCallback(this.getMousePosition(this.imageStage)));
+      image.on('click', () => clickCallback(this.mapMousePosition(this.getMousePosition(this.imageStage), widthFactor, heightFactor)));
       this.addToLayer(layer, [image, label]);
       layer.batchDraw();
     });
@@ -59,8 +59,8 @@ export class KonvaPainterService {
 
     keypoints.forEach((keypoint: Keypoint) => {
       const circleConfig = this.userKeyPointConfig;
-      circleConfig.x = keypoint.x;
-      circleConfig.y = keypoint.y;
+      circleConfig.x = keypoint.getVisibleX();
+      circleConfig.y = keypoint.getVisibleY();
       keyPointsCircles.push(this.createCircle(circleConfig));
     });
 
@@ -191,8 +191,29 @@ export class KonvaPainterService {
     return {x: Math.round(position.x), y: Math.round(position.y)};
   }
 
-  private showMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text) {
-    const mousePosition = this.getMousePosition(stage);
+  private mapMousePosition(mousePosition, widthFactor: number, heightFactor: number) {
+    if (widthFactor > 1) {
+      mousePosition.x = Math.round(mousePosition.x / widthFactor);
+    } else {
+      mousePosition.x = Math.round(mousePosition.x * widthFactor);
+    }
+
+    if (heightFactor > 1) {
+      mousePosition.y = Math.round(mousePosition.y / heightFactor);
+    } else {
+      mousePosition.y = Math.round(mousePosition.y * heightFactor);
+    }
+
+    mousePosition.widthFactor = widthFactor;
+    mousePosition.heightFactor = heightFactor;
+
+    return mousePosition;
+  }
+
+
+  private showMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text, widthFactor: number, heightFactor: number) {
+    let mousePosition = this.getMousePosition(stage);
+    mousePosition = this.mapMousePosition(mousePosition, widthFactor, heightFactor);
     this.writeMessage(layer, text, 'x: ' + mousePosition.x + ', y: ' + mousePosition.y);
   }
 

@@ -7,8 +7,10 @@ export const environment = {
   idTemplateImage: 'pitch.png',
 
   defaults: {
-    imgWidth: 320,
-    imgHeight: 320,
+    resizedImgWidth: 320,
+    resizedImgHeight: 320,
+    visibleImgWidth: 1024,
+    visibleImgHeight: 1024,
     imgDirectory: 'JPEGImages',
     zipFile: 'data',
     statsFileHeader: 'Key point ID / Count\n'

@@ -6,11 +6,11 @@
   <div class="spacer"></div>
   <mat-form-field class="input-headline">
     <mat-label>Image width</mat-label>
-    <input id="imgWidth" matInput type="number" min="0" max="512" [(ngModel)]="imgWidth" disabled="{{imagesLoadedAlready()}}">
+    <input id="imgWidth" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgWidth" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
   <mat-form-field class="input-headline">
     <mat-label>Image height</mat-label>
-    <input id="imgHeight" matInput type="number" min="0" max="512" [(ngModel)]="imgHeight" disabled="{{imagesLoadedAlready()}}">
+    <input id="imgHeight" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgHeight" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
   <mat-form-field class="input-headline">
     <mat-label>Image directory</mat-label>
@@ -43,6 +43,8 @@
           <div style="width: 100%">
             <div style="float:left">
               <div id="{{imageContainer + rowNum}}"></div>
+            </div>
+            <div class="overflow">
               <div id="{{templateContainer + rowNum}}"></div>
             </div>
             <div class="overflow">

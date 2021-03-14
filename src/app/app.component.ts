@@ -29,8 +29,10 @@ export class AppComponent implements OnInit{
   notifications: NotificationService;
   spinnerService: SpinnerService;
 
-  imgHeight = environment.defaults.imgHeight;
-  imgWidth = environment.defaults.imgWidth;
+  resizedImgHeight = environment.defaults.resizedImgHeight;
+  resizedImgWidth = environment.defaults.resizedImgWidth;
+  visibleImgHeight = environment.defaults.visibleImgHeight;
+  visibleImgWidth = environment.defaults.visibleImgWidth;
   imgDirectory = environment.defaults.imgDirectory;
   zipFileName = environment.defaults.zipFile;
   templateConfig = environment.templateImg;
@@ -90,9 +92,9 @@ export class AppComponent implements OnInit{
   private makeImgData(imageName: string, imageIdx: number): Promise<ImageData> {
     return new Promise(resolve => {
       this.fileService.getDataUrl(imageIdx).then((url: string) => {
-        this.konvaPainter.getResizedDataUrl(this.resizeContainer, url, this.imgWidth, this.imgHeight)
+        this.konvaPainter.getResizedDataUrl(this.resizeContainer, url, this.resizedImgWidth, this.resizedImgHeight)
           .then((dataUrl: string) => {
-            resolve(new ImageData(this.imgDirectory, imageName, dataUrl, this.imgWidth, this.imgHeight));
+            resolve(new ImageData(this.imgDirectory, imageName, dataUrl, this.resizedImgWidth, this.resizedImgHeight));
           });
       });
     });
@@ -182,7 +184,7 @@ export class AppComponent implements OnInit{
   }
 
   missingData(): boolean {
-    return (this.imgData.length === 0 || this.imgHeight === undefined || this.imgWidth === undefined || this.imgDirectory === undefined ||
+    return (this.imgData.length === 0 || this.resizedImgHeight === undefined || this.resizedImgWidth === undefined || this.imgDirectory === undefined ||
       UtilsService.count2dElements(this.keyPoints) === 0 || this.keyPoints.filter((keyPoints1d: []) =>
         keyPoints1d.filter((keyPoint: Keypoint) => (keyPoint.id === undefined || keyPoint.id === null)).length !== 0
       ).length !== 0);
@@ -191,7 +193,7 @@ export class AppComponent implements OnInit{
   expandAndDrawImages(imageRowData: any, imageRowIdx: number) {
     this.fileService.getDataUrl(imageRowIdx)
       .then((url: string) => {
-        this.drawPicture((this.imageContainer + imageRowIdx), url, this.imgWidth, this.imgHeight);
+        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgWidth, this.visibleImgHeight);
         this.drawUserKeyPoints(this.keyPoints[imageRowIdx]);
       });
     this.drawTemplate((this.templateContainer + imageRowIdx), this.templateConfig.width, this.templateConfig.height);
@@ -200,7 +202,9 @@ export class AppComponent implements OnInit{
   }
 
   private drawPicture(containerName: string, imageUrl: string, width: number, height: number) {
-    this.konvaPainter.drawPicture(containerName, imageUrl, width, height, (point) => this.addNewKeyPoint(point, this.expandedImageId));
+    const widthFactor = width / this.resizedImgWidth;
+    const heightFactor = height / this.resizedImgHeight;
+    this.konvaPainter.drawPicture(containerName, imageUrl, width, height, widthFactor, heightFactor, (point) => this.addNewKeyPoint(point, this.expandedImageId));
   }
 
   private drawTemplate(containerName: string, width: number, height: number) {

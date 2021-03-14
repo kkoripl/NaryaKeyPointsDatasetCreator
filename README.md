@@ -3,6 +3,8 @@
 Pitch key points dataset creator for [Narya](https://github.com/DonsetPG/narya), player and pitch tracking model.
 
 ## Instruction
+**Remember! Sizes of images on the left side of a panel would be always 1024x1024 to make it easier to pick particular spots on the graphic. But the dimension, you see in upper left corner is mapped to the size your image would be resized to, which you picked in first point of this instruction (below). Due to calculations on dimensions, circles of points clicked can be a little misplaced (pixel, two etc.) on the picture. They are 100% good in files though.**
+
 
 - Setup final dimension of images - dimension, which would you use to train model on. Max: 512x512
 - Setup name of directory, where you'd put created by this generator images in.
