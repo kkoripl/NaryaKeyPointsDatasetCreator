@@ -6,17 +6,20 @@ import {ImgFile} from '../model/img-file';
 export class ZipFileCreatorService {
   static xmlDirectoryName = 'Annotations';
 
-  static generateZip(xmls: XmlFile[], imgs: ImgFile[], statsFileContent: string, zipFileName: string, imgDirectoryName: string) {
-    const zip = new JSZip();
-    const xmlDirectory = zip.folder(this.xmlDirectoryName);
-    const imagesDirectory = zip.folder(imgDirectoryName);
-    this.addXmls(xmls, xmlDirectory);
-    this.addImages(imgs, imagesDirectory);
-    this.addStats(statsFileContent, zip);
-    zip.generateAsync({type: 'blob'})
-      .then((content) => {
-        FileSaver.saveAs(content, zipFileName + '.zip');
-      });
+  static generateZip(xmls: XmlFile[], imgs: ImgFile[], statsFileContent: string, zipFileName: string, imgDirectoryName: string): Promise<any> {
+    return new Promise(resolve => {
+      const zip = new JSZip();
+      const xmlDirectory = zip.folder(this.xmlDirectoryName);
+      const imagesDirectory = zip.folder(imgDirectoryName);
+      this.addXmls(xmls, xmlDirectory);
+      this.addImages(imgs, imagesDirectory);
+      this.addStats(statsFileContent, zip);
+      zip.generateAsync({type: 'blob'})
+        .then((content) => {
+          FileSaver.saveAs(content, zipFileName + '.zip');
+          resolve();
+        });
+    });
   }
 
   private static addImages(images: ImgFile[], imagesDirectory) {

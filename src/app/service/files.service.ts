@@ -98,11 +98,14 @@ export class FilesService {
     return filenames;
   }
 
-  async generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string) {
-    const xmlFiles = this.createXmlFiles(imgDatas, keyPoints);
-    const imgFiles = this.createImageFiles(imgDatas);
-    const statsFileContent = this.createStatsFileContent(keyPoints);
-    ZipFileCreatorService.generateZip(xmlFiles, imgFiles, statsFileContent, zipFileName, imgDirectoryName);
+  generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
+    return new Promise(resolve => {
+      const xmlFiles = this.createXmlFiles(imgDatas, keyPoints);
+      const imgFiles = this.createImageFiles(imgDatas);
+      const statsFileContent = this.createStatsFileContent(keyPoints);
+      ZipFileCreatorService.generateZip(xmlFiles, imgFiles, statsFileContent, zipFileName, imgDirectoryName)
+        .then(() => resolve());
+    });
   }
 
   private createImageFiles(imageDatas: ImageData[]): ImgFile[] {
