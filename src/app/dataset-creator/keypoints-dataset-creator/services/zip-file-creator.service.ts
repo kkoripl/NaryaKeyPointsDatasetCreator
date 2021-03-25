@@ -1,8 +1,10 @@
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
-import {XmlFile} from '../model/xml-file';
-import {ImgFile} from '../model/img-file';
+import {XmlFile} from '../../../commons/models/xml-file';
+import {ImgFile} from '../../../commons/models/img-file';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class ZipFileCreatorService {
   static xmlDirectoryName = 'Annotations';
 

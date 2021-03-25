@@ -1,9 +1,7 @@
 import {ToastrService} from 'ngx-toastr';
 import {Injectable} from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class NotificationService {
 
   private notificationTimeoutMillis = 7500;

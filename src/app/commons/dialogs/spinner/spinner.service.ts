@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {SpinnerComponent} from '../dialogs/spinner/spinner.component';
+import {SpinnerComponent} from './spinner.component';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SpinnerService {
 
   constructor(private router: Router, private dialog: MatDialog) {}

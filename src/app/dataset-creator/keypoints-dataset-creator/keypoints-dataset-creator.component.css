@@ -1,0 +1,58 @@
+div.main {
+  display: flex;
+  justify-content: center;
+}
+
+.invisible{
+  display: none;
+}
+.overflow {
+  overflow: hidden;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.highlight{
+  background: #d4dfff; /* green */
+}
+
+
+table.secondary {
+  width: 91%;
+}
+
+table.main {
+  width: 90%;
+  align-self: center;
+}
+
+mat-form-field.input-headline {
+  align-self: center;
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 500;
+  padding: 10px 5px 5px 5px;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: #dedede;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #d4dfff;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}

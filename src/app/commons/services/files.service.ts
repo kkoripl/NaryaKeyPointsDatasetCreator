@@ -1,18 +1,14 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {XmlFileCreatorService} from './xml-file-creator.service';
-import {Keypoint} from '../model/keypoint';
-import {ImageData} from '../model/image-data';
-import {XmlFile} from '../model/xml-file';
-import {ImgFile} from '../model/img-file';
-import {ZipFileCreatorService} from './zip-file-creator.service';
-import {environment} from '../../environments/environment';
-import {UtilsService} from './utils.service';
+import {XmlFileCreatorService} from '../../dataset-creator/keypoints-dataset-creator/services/xml-file-creator.service';
+import {Keypoint} from '../../dataset-creator/keypoints-dataset-creator/models/keypoint';
+import {ImageData} from '../models/image-data';
+import {XmlFile} from '../models/xml-file';
+import {ImgFile} from '../models/img-file';
+import {ZipFileCreatorService} from '../../dataset-creator/keypoints-dataset-creator/services/zip-file-creator.service';
+import {environment} from '../../../environments/environment';
+import {UtilsService} from '../../dataset-creator/keypoints-dataset-creator/services/utils.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class FilesService {
   private imageFiles: FileList;
   private fileReader: FileReader;

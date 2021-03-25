@@ -1,13 +1,10 @@
 import {Injectable} from '@angular/core';
 import Konva from 'konva';
-import Vector2d = Konva.Vector2d;
-import {Keypoint} from '../model/keypoint';
-import {environment} from '../../environments/environment';
+import {Keypoint} from '../models/keypoint';
+import {environment} from '../../../../environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class KonvaPainterService {
+@Injectable()
+export class KeyPointsPainterService {
   private keyPointsLayer = 'keyPointsLayer';
   private templateKeyPointsLayer = 'templateKeyPointsLayer';
   private imageStage: Konva.Stage;
@@ -36,6 +33,7 @@ export class KonvaPainterService {
     });
   }
 
+  // tslint:disable-next-line:max-line-length
   drawPicture(containerName: string, imageUrl: string, width: number, height: number, widthFactor: number, heightFactor: number, clickCallback) {
     this.imageStage = this.createStage(containerName, width, height);
     const layer = new Konva.Layer();

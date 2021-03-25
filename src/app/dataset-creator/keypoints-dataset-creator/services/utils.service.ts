@@ -1,6 +1,8 @@
-import {Keypoint} from '../model/keypoint';
-import {environment} from '../../environments/environment';
+import {Keypoint} from '../models/keypoint';
+import {environment} from '../../../../environments/environment';
+import {Injectable} from '@angular/core';
 
+@Injectable()
 export class UtilsService {
 
   allKeypointsIds = environment.templateKeyPoints.map((keypoint) => keypoint.id);

@@ -1,14 +1,12 @@
-import {environment} from '../../environments/environment';
+import {environment} from '../../../../environments/environment';
 import {Injectable} from '@angular/core';
 
 import XMLWriter from 'xml-writer';
-import {Keypoint} from '../model/keypoint';
-import {ImageData} from '../model/image-data';
-import {XmlFile} from '../model/xml-file';
+import {Keypoint} from '../models/keypoint';
+import {ImageData} from '../../../commons/models/image-data';
+import {XmlFile} from '../../../commons/models/xml-file';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class XmlFileCreatorService {
   mainTag = environment.xmlTags.mainTag;
   keyPointTags = environment.xmlTags.keyPoint;
