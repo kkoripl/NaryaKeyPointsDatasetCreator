@@ -11,38 +11,52 @@ import {MatInputModule} from '@angular/material/input';
 import {ToastrModule} from 'ngx-toastr';
 import {MatToolbarModule} from '@angular/material/toolbar';
 
-import {UtilsModule} from '../commons/utils.module';
+import {CommonsModule} from '../commons/commons.module';
 import {KeyPointsDatasetCreatorComponent} from './keypoints-dataset-creator/keypoints-dataset-creator.component';
-import {KeyPointsPainterService} from './keypoints-dataset-creator/services/key-points-painter.service';
+import {KeypointsPainterService} from './keypoints-dataset-creator/services/keypoints-painter.service';
 import {XmlFileCreatorService} from './keypoints-dataset-creator/services/xml-file-creator.service';
-import {ZipFileCreatorService} from './keypoints-dataset-creator/services/zip-file-creator.service';
-import {UtilsService} from './keypoints-dataset-creator/services/utils.service';
+import {ZipFileCreatorService} from '../commons/services/zip-file-creator.service';
+import {KeypointsUtilsService} from './keypoints-dataset-creator/services/keypoints-utils.service';
 import {MatFormFieldModule} from '@angular/material/form-field';
+import {TrackerDatasetCreatorComponent} from './tracker-dataset-creator/tracker-dataset-creator.component';
+import {TrackerBboxPainterService} from './tracker-dataset-creator/services/tracker-bbox-painter.service';
+import {DatasetCreatorComponent} from './dataset-creator.component';
+import {MatSelectModule} from '@angular/material/select';
+import {KeypointsFileService} from './keypoints-dataset-creator/services/keypoints-file-service';
+import {TrackerFileService} from './tracker-dataset-creator/services/tracker-file.service';
+import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/tracker-xml-file-creator.service';
 
 @NgModule({
   declarations: [
-    KeyPointsDatasetCreatorComponent
+    DatasetCreatorComponent,
+    KeyPointsDatasetCreatorComponent,
+    TrackerDatasetCreatorComponent
   ],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    ToastrModule.forRoot(),
-    UtilsModule,
-    MatToolbarModule,
-    MatFormFieldModule,
-    MatTableModule,
-    MatInputModule,
-    MatButtonModule,
-    MatTooltipModule,
-    MatIconModule,
-    FormsModule
-  ],
+    imports: [
+        CommonModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        ToastrModule.forRoot(),
+        CommonsModule,
+        MatToolbarModule,
+        MatFormFieldModule,
+        MatTableModule,
+        MatInputModule,
+        MatButtonModule,
+        MatTooltipModule,
+        MatIconModule,
+        FormsModule,
+        MatSelectModule
+    ],
   providers: [
-    KeyPointsPainterService,
+    KeypointsPainterService,
+    KeypointsFileService,
+    TrackerBboxPainterService,
+    TrackerXmlFileCreatorService,
+    TrackerFileService,
     XmlFileCreatorService,
     ZipFileCreatorService,
-    UtilsService
+    KeypointsUtilsService
   ],
   bootstrap: []
 })

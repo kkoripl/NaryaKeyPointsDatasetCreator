@@ -5,3 +5,12 @@
 .accent-border {
   border: 2px solid #448aff;
 }
+
+.lastly-clicked-link {
+  color: #303f9f;
+  background-color: white;
+}
+
+.normal-link {
+  color: white;
+}

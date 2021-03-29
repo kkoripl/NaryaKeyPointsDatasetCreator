@@ -22,6 +22,7 @@ export const environment = {
 
   validImageMimeTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/bmp'],
 
+
   xmlTags: {
     mainTag: 'annotation',
     keyPoint: {
@@ -34,6 +35,15 @@ export const environment = {
       y: 'y1',
       v: 'v1',
       vDefault: 2,
+      boundingBox: 'bndbox',
+      xmin: 'xmin',
+      ymin: 'ymin',
+      xmax: 'xmax',
+      ymax: 'ymax'
+    },
+    bbox: {
+      object: 'object',
+      label: 'name',
       boundingBox: 'bndbox',
       xmin: 'xmin',
       ymin: 'ymin',
@@ -53,7 +63,7 @@ export const environment = {
     width: 512,
     height: 397
   },
-  draw: {
+  draw : {
     texts: {
       picturePlaceholderConfig: {
         x: 0,
@@ -109,6 +119,14 @@ export const environment = {
         stroke: 'black',
         strokeWidth: 1,
       },
+      userBboxConfig: {
+        x: -1,
+        y: -1,
+        width: 0,
+        height: 0,
+        strokeWidth: 2,
+        stroke: 'pink'
+      },
       templateSelectedConfig: {
         id: -1,
         x: 0,
@@ -126,6 +144,12 @@ export const environment = {
         fill: 'green',
         stroke: 'black',
         strokeWidth: 2
+      },
+      coordslabelConfig: {
+        x: 0,
+        y: 0,
+        opacity: 0.75,
+        fill: 'black'
       }
     }
   },

@@ -1,27 +1,32 @@
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
-import {XmlFile} from '../../../commons/models/xml-file';
-import {ImgFile} from '../../../commons/models/img-file';
+import {XmlFile} from '../models/xml-file';
+import {ImgFile} from '../models/img-file';
 import {Injectable} from '@angular/core';
 
 @Injectable()
 export class ZipFileCreatorService {
   static xmlDirectoryName = 'Annotations';
 
-  static generateZip(xmls: XmlFile[], imgs: ImgFile[], statsFileContent: string, zipFileName: string, imgDirectoryName: string): Promise<any> {
+  static generateZip(xmls: XmlFile[], imgs: ImgFile[], txtFileContent: string, zipFileName: string,
+                     imgDirectoryName: string, txtFileName: string): Promise<any> {
     return new Promise(resolve => {
       const zip = new JSZip();
-      const xmlDirectory = zip.folder(this.xmlDirectoryName);
-      const imagesDirectory = zip.folder(imgDirectoryName);
+      const xmlDirectory = this.addDirectory(zip, this.xmlDirectoryName);
+      const imagesDirectory = this.addDirectory(zip, imgDirectoryName);
       this.addXmls(xmls, xmlDirectory);
       this.addImages(imgs, imagesDirectory);
-      this.addStats(statsFileContent, zip);
+      this.addFile(txtFileName, txtFileContent, zip);
       zip.generateAsync({type: 'blob'})
         .then((content) => {
           FileSaver.saveAs(content, zipFileName + '.zip');
           resolve();
         });
     });
+  }
+
+  private static addDirectory(zip: JSZip, directoryName: string): JSZip {
+    return zip.folder(directoryName);
   }
 
   private static addImages(images: ImgFile[], imagesDirectory) {
@@ -36,7 +41,7 @@ export class ZipFileCreatorService {
     });
   }
 
-  private static addStats(statsFileContent: string, zip) {
-    zip.file('stats.txt', statsFileContent);
+  private static addFile(filename: string, statsFileContent: string, zip) {
+    zip.file(filename, statsFileContent);
   }
 }

@@ -1,17 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-
 import {environment} from '../../../environments/environment';
 import {MatTableDataSource} from '@angular/material/table';
 
-import {FilesService} from '../../commons/services/files.service';
 import {NotificationService} from '../../commons/services/notification.service';
 import {SpinnerService} from '../../commons/dialogs/spinner/spinner.service';
 import {PathsGeneratorService} from '../../commons/services/paths.generator.service';
+import {KeypointsPainterService} from './services/keypoints-painter.service';
+import {KeypointsFileService} from './services/keypoints-file-service';
+import {ArraysUtilsService} from '../../commons/services/arrays-utils.service';
 import {ImageData} from '../../commons/models/image-data';
-
-import {KeyPointsPainterService} from './services/key-points-painter.service';
-import {UtilsService} from './services/utils.service';
 import {Keypoint} from './models/keypoint';
 
 
@@ -28,8 +26,8 @@ import {Keypoint} from './models/keypoint';
   ]
 })
 export class KeyPointsDatasetCreatorComponent implements OnInit {
-  fileService: FilesService;
-  keyPointsPainter: KeyPointsPainterService;
+  fileService: KeypointsFileService;
+  keyPointsPainter: KeypointsPainterService;
   notifications: NotificationService;
   spinnerService: SpinnerService;
 
@@ -57,8 +55,8 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
 
   selectedKeyPoint: Keypoint;
 
-  constructor(fileUploaderService: FilesService,
-              keyPointsPainter: KeyPointsPainterService,
+  constructor(fileUploaderService: KeypointsFileService,
+              keyPointsPainter: KeypointsPainterService,
               notificationService: NotificationService,
               spinnerService: SpinnerService) {
     this.fileService = fileUploaderService;
@@ -166,7 +164,7 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
   }
 
   deleteKeypoint(keypointToDelete: Keypoint, imageIdx: number) {
-    this.keyPoints[imageIdx] = UtilsService.deleteElementFromList(this.keyPoints[imageIdx], keypointToDelete);
+    this.keyPoints[imageIdx] = ArraysUtilsService.deleteElementFromList(this.keyPoints[imageIdx], keypointToDelete);
     if (keypointToDelete === this.selectedKeyPoint) {
       this.resetSelection();
     }
@@ -190,7 +188,7 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
   missingData(): boolean {
     return (this.imgData.length === 0
       || this.resizedImgHeight === undefined || this.resizedImgWidth === undefined
-      || this.imgDirectory === undefined || UtilsService.count2dElements(this.keyPoints) === 0
+      || this.imgDirectory === undefined || ArraysUtilsService.count2dElements(this.keyPoints) === 0
       || this.keyPoints.filter((keyPoints1d: []) =>
         keyPoints1d.filter((keyPoint: Keypoint) => (keyPoint.id === undefined || keyPoint.id === null)).length !== 0
       ).length !== 0);

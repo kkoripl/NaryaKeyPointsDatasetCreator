@@ -45,6 +45,15 @@ export const environment = {
       xmax: 'xmax',
       ymax: 'ymax'
     },
+    bbox: {
+      object: 'object',
+      label: 'name',
+      boundingBox: 'bndbox',
+      xmin: 'xmin',
+      ymin: 'ymin',
+      xmax: 'xmax',
+      ymax: 'ymax'
+    },
     imgData: {
       directory: 'folder',
       filename: 'filename',
@@ -114,6 +123,14 @@ export const environment = {
         stroke: 'black',
         strokeWidth: 1,
       },
+      userBboxConfig: {
+        x: -1,
+        y: -1,
+        width: 0,
+        height: 0,
+        strokeWidth: 2,
+        stroke: 'pink'
+      },
       templateSelectedConfig: {
         id: -1,
         x: 0,
@@ -131,6 +148,12 @@ export const environment = {
         fill: 'green',
         stroke: 'black',
         strokeWidth: 2
+      },
+      coordslabelConfig: {
+        x: 0,
+        y: 0,
+        opacity: 0.75,
+        fill: 'black'
       }
     }
   },

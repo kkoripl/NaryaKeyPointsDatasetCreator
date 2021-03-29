@@ -1,18 +1,21 @@
 import {Injectable} from '@angular/core';
-import Konva from 'konva';
-import {Keypoint} from '../models/keypoint';
 import {environment} from '../../../../environments/environment';
+import Konva from 'konva';
+
+import {Keypoint} from '../models/keypoint';
+import {KonvaService} from '../../../commons/services/konva.service';
 
 @Injectable()
-export class KeyPointsPainterService {
-  private keyPointsLayer = 'keyPointsLayer';
-  private templateKeyPointsLayer = 'templateKeyPointsLayer';
-  private imageStage: Konva.Stage;
+export class KeypointsPainterService extends KonvaService {
+  private keyPointsLayerName = 'keyPointsLayer';
+  private keyPointsLayerConfig = {id: this.keyPointsLayerName};
+  private templateKeyPointsLayerName = 'templateKeyPointsLayer';
+  private templateKeyPointsLayerConfig = {id: this.templateKeyPointsLayerName};
   private templateStage: Konva.Stage;
-  private resizeStage: Konva.Stage;
 
   private templateKeyPoints = environment.templateKeyPoints;
   private coordsTextConfig = environment.draw.texts.coordsConfig;
+  private coordslabelConfig = environment.draw.shapes.coordslabelConfig;
   private templateKpSelectedTextConfig = environment.draw.texts.keyPointSelectedConfig;
   private templateKpAvailableTextConfig = environment.draw.texts.keyPointAvailableConfig;
 
@@ -20,40 +23,31 @@ export class KeyPointsPainterService {
   private templateSelectedConfig = environment.draw.shapes.templateSelectedConfig;
   private templateAvailableConfig = environment.draw.shapes.templateAvailableConfig;
 
-  getResizedDataUrl(containerName: string, imageUrl: string, width: number, height: number): Promise<string>{
-    return new Promise(resolve => {
-      this.resizeStage = this.createStage(containerName, width, height);
-      const layer = new Konva.Layer();
-      this.loadImage(imageUrl, width, height, (image: Konva.Image) => {
-        this.addToLayer(layer, [image]);
-        layer.batchDraw();
-        this.resizeStage.add(layer);
-        resolve(this.resizeStage.toDataURL({mimeType: 'image/jpeg', quality: 1}));
-      });
-    });
+  constructor() {
+    super();
   }
 
   // tslint:disable-next-line:max-line-length
   drawPicture(containerName: string, imageUrl: string, width: number, height: number, widthFactor: number, heightFactor: number, clickCallback) {
     this.imageStage = this.createStage(containerName, width, height);
-    const layer = new Konva.Layer();
+    const mainLayer = this.createLayer(this.mainLayerConfig);
     const text = this.createText(this.coordsTextConfig);
-    const label = this.createLabel(text);
+    const label = this.createLabel(text, this.coordslabelConfig);
     this.loadImage(imageUrl, width, height, (image: Konva.Image) => {
-      image.on('mousemove', () => this.showMousePosition(this.imageStage, layer, text, widthFactor, heightFactor));
-      image.on('mouseout', () => this.clearMousePosition(layer, text));
+      image.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, widthFactor, heightFactor));
+      image.on('mouseout', () => this.clearMousePosition(mainLayer, text));
       image.on('click', () => clickCallback(this.mapMousePosition(this.getMousePosition(this.imageStage), widthFactor, heightFactor)));
-      this.addToLayer(layer, [image, label]);
-      layer.batchDraw();
+      this.addElementsToLayer(mainLayer, [image, label]);
+      mainLayer.batchDraw();
     });
-    this.imageStage.add(layer);
+    this.addToStage(this.imageStage, mainLayer);
   }
 
   drawKeyPoints(keypoints: Keypoint[]) {
     const keyPointsCircles: Konva.Circle[] = [];
 
-    this.deleteLayerFromStage(this.keyPointsLayer, this.imageStage);
-    const newKeyPointsLayer = new Konva.Layer({id: this.keyPointsLayer});
+    this.deleteLayerFromStage(this.keyPointsLayerName, this.imageStage);
+    const newKeyPointsLayer = this.createLayer(this.keyPointsLayerConfig);
 
     keypoints.forEach((keypoint: Keypoint) => {
       const circleConfig = this.userKeyPointConfig;
@@ -62,19 +56,19 @@ export class KeyPointsPainterService {
       keyPointsCircles.push(this.createCircle(circleConfig));
     });
 
-    this.addToLayer(newKeyPointsLayer, keyPointsCircles);
+    this.addElementsToLayer(newKeyPointsLayer, keyPointsCircles);
     newKeyPointsLayer.draw();
-    this.imageStage.add(newKeyPointsLayer);
+    this.addToStage(this.imageStage, newKeyPointsLayer);
   }
 
   drawTemplate(containerName: string, templateUrl: string, width: number, height: number) {
     this.templateStage = this.createStage(containerName, width, height);
-    const layer = new Konva.Layer();
+    const layer = this.createLayer(this.templateKeyPointsLayerConfig);
     this.loadImage(templateUrl, width, height, (image: Konva.Image) => {
-      this.addToLayer(layer, [image]);
+      this.addToLayer(layer, image);
       layer.batchDraw();
     });
-    this.templateStage.add(layer);
+    this.addToStage(this.templateStage, layer);
   }
 
   drawTemplateKeyPoints(keypoints: Keypoint[], callback) {
@@ -82,13 +76,13 @@ export class KeyPointsPainterService {
     const selectedKeyPoints = this.templateKeyPoints.filter((keypoint) => selectedKeyPointsIds.indexOf(keypoint.id) !== -1);
     const availableKeyPoints = this.templateKeyPoints.filter((keypoint) => selectedKeyPointsIds.indexOf(keypoint.id) === -1);
 
-    this.deleteLayerFromStage(this.templateKeyPointsLayer, this.templateStage);
-    const keyPointsLayer = new Konva.Layer({id: this.templateKeyPointsLayer});
+    this.deleteLayerFromStage(this.templateKeyPointsLayerName, this.templateStage);
+    const keyPointsLayer = this.createLayer(this.keyPointsLayerConfig);
 
     this.drawSelectedTemplateKeyPoints(keyPointsLayer, selectedKeyPoints);
     this.drawAvailableTemplateKeyPoints(keyPointsLayer, availableKeyPoints, callback);
 
-    this.templateStage.add(keyPointsLayer);
+    this.addToStage(this.templateStage, keyPointsLayer);
   }
 
   private drawSelectedTemplateKeyPoints(layer: Konva.Layer, points: any[]) {
@@ -100,7 +94,7 @@ export class KeyPointsPainterService {
       keyPointsCircles.push(this.createText(textConfig));
     });
 
-    this.addToLayer(layer, keyPointsCircles);
+    this.addElementsToLayer(layer, keyPointsCircles);
     layer.draw();
   }
 
@@ -113,35 +107,8 @@ export class KeyPointsPainterService {
       keyPointsCircles.push(this.createTextReturningValueOnClick(textConfig, callback));
     });
 
-    this.addToLayer(layer, keyPointsCircles);
+    this.addElementsToLayer(layer, keyPointsCircles);
     layer.draw();
-  }
-
-
-  private createStage(containterName: string, width: number, height: number): Konva.Stage {
-    return new Konva.Stage({
-      container: containterName,
-      width,
-      height,
-    });
-  }
-
-  private loadImage(source, width, height, callback) {
-    const image = new Image();
-    image.onload = () => {
-      callback(this.createImage(image, width, height));
-    };
-    image.src = source;
-  }
-
-  private createImage(imageObj: HTMLImageElement, width: number, height: number) {
-    return new Konva.Image({
-      image: imageObj,
-      x: 0,
-      y: 0,
-      width,
-      height
-    });
   }
 
   private createTextReturningValueOnClick(config, callback): Konva.Text {
@@ -150,78 +117,11 @@ export class KeyPointsPainterService {
     return text;
   }
 
-  private createText(config): Konva.Text {
-    return new Konva.Text(config);
-  }
-
-  private createLabel(text: Konva.Text): Konva.Label {
-    const label = new Konva.Label({
-      x: 0,
-      y: 0,
-      opacity: 0.75,
-    });
-
-    label.add(
-      new Konva.Tag({
-        fill: 'black',
-      })
-    );
-
-    label.add(text);
-    return label;
-  }
 
   private createCircleReturningIdOnClick(config, callback): Konva.Circle {
     const circle = this.createCircle(config);
     circle.on('click', () => callback(+circle.getAttr('id')));
     return circle;
-  }
-
-  private createCircle(config): Konva.Circle {
-    return new Konva.Circle(config);
-  }
-
-  private createRect(config): Konva.Rect {
-    return new Konva.Rect(config);
-  }
-  private getMousePosition(stage: Konva.Stage) {
-    const position = stage.getPointerPosition();
-    return {x: Math.round(position.x), y: Math.round(position.y)};
-  }
-
-  private mapMousePosition(mousePosition, widthFactor: number, heightFactor: number) {
-    if (widthFactor > 1) {
-      mousePosition.x = Math.round(mousePosition.x / widthFactor);
-    } else {
-      mousePosition.x = Math.round(mousePosition.x * widthFactor);
-    }
-
-    if (heightFactor > 1) {
-      mousePosition.y = Math.round(mousePosition.y / heightFactor);
-    } else {
-      mousePosition.y = Math.round(mousePosition.y * heightFactor);
-    }
-
-    mousePosition.widthFactor = widthFactor;
-    mousePosition.heightFactor = heightFactor;
-
-    return mousePosition;
-  }
-
-
-  private showMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text, widthFactor: number, heightFactor: number) {
-    let mousePosition = this.getMousePosition(stage);
-    mousePosition = this.mapMousePosition(mousePosition, widthFactor, heightFactor);
-    this.writeMessage(layer, text, 'x: ' + mousePosition.x + ', y: ' + mousePosition.y);
-  }
-
-  private clearMousePosition(layer: Konva.Layer, text: Konva.Text) {
-    this.writeMessage(layer, text, '');
-  }
-
-  private writeMessage(layer: Konva.Layer, text: Konva.Text, message: string) {
-    text.text(message);
-    layer.draw();
   }
 
   private createKeyPointTemplateConfig(keypoint, circleConfig) {
@@ -245,18 +145,5 @@ export class KeyPointsPainterService {
     }
 
     return config;
-  }
-
-  private addToLayer(layer: Konva.Layer, elements) {
-    for (const element of elements) {
-      layer.add(element);
-    }
-  }
-
-  private deleteLayerFromStage(layerId: string, stage: Konva.Stage){
-    const layer = stage.findOne('#' + layerId);
-    if (layer) {
-      layer.destroy();
-    }
   }
 }

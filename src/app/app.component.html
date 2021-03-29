@@ -1,5 +1,8 @@
 <mat-toolbar class="darker-primary">
-  <a mat-button routerLink="/keypoints-dataset" routerLinkActive="active" style="color: white">Keypoints dataset creator</a>
+  <a id="keypoints" (click) = changeLastlyClicked($event) [ngClass]="(isLastlyClicked('keypoints')) ? 'lastly-clicked-link': 'normal-link'" mat-button routerLink="/keypoints-dataset"
+     routerLinkActive="active">Keypoints dataset creator</a>
+  <a id="tracker" (click) = changeLastlyClicked($event) [ngClass]="(isLastlyClicked('tracker')) ? 'lastly-clicked-link': 'normal-link'" mat-button routerLink="/tracker-dataset"
+     routerLinkActive="active">Tracker dataset creator</a>
 </mat-toolbar>
 <mat-divider class="accent-border"></mat-divider>
 
