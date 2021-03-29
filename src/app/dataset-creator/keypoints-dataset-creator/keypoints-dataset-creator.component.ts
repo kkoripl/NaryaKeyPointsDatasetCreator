@@ -182,7 +182,7 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
   }
 
   imagesLoadedAlready(): boolean {
-    return this.imgData.length !== 0;
+    return (this.imgData.length !== 0);
   }
 
   missingData(): boolean {
@@ -262,7 +262,7 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
     this.expandedImageId = undefined;
   }
 
-  navigateToInstruction(){
+  navigateToInstruction() {
       window.open(this.instructionUrl, '_blank');
   }
 }

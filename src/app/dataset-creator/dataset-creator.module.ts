@@ -14,7 +14,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {CommonsModule} from '../commons/commons.module';
 import {KeyPointsDatasetCreatorComponent} from './keypoints-dataset-creator/keypoints-dataset-creator.component';
 import {KeypointsPainterService} from './keypoints-dataset-creator/services/keypoints-painter.service';
-import {XmlFileCreatorService} from './keypoints-dataset-creator/services/xml-file-creator.service';
+import {KeypointsXmlFileCreatorService} from './keypoints-dataset-creator/services/keypoints-xml-file-creator.service';
 import {ZipFileCreatorService} from '../commons/services/zip-file-creator.service';
 import {KeypointsUtilsService} from './keypoints-dataset-creator/services/keypoints-utils.service';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -54,7 +54,7 @@ import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/t
     TrackerBboxPainterService,
     TrackerXmlFileCreatorService,
     TrackerFileService,
-    XmlFileCreatorService,
+    KeypointsXmlFileCreatorService,
     ZipFileCreatorService,
     KeypointsUtilsService
   ],

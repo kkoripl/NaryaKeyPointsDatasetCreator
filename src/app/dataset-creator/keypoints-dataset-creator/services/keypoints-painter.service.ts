@@ -76,7 +76,7 @@ export class KeypointsPainterService extends KonvaService {
     const selectedKeyPoints = this.templateKeyPoints.filter((keypoint) => selectedKeyPointsIds.indexOf(keypoint.id) !== -1);
     const availableKeyPoints = this.templateKeyPoints.filter((keypoint) => selectedKeyPointsIds.indexOf(keypoint.id) === -1);
 
-    this.deleteLayerFromStage(this.templateKeyPointsLayerName, this.templateStage);
+    this.deleteLayerFromStage(this.keyPointsLayerName, this.templateStage);
     const keyPointsLayer = this.createLayer(this.keyPointsLayerConfig);
 
     this.drawSelectedTemplateKeyPoints(keyPointsLayer, selectedKeyPoints);

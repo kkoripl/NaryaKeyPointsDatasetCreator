@@ -5,7 +5,7 @@ import {XmlFileBaseCreatorService} from '../../../commons/services/xml-file-base
 import {Keypoint} from '../models/keypoint';
 
 @Injectable()
-export class XmlFileCreatorService extends XmlFileBaseCreatorService {
+export class KeypointsXmlFileCreatorService extends XmlFileBaseCreatorService {
   keyPointTags = environment.xmlTags.keyPoint;
 
   protected createElement(xmlWriter: any, keyPointData: Keypoint) {

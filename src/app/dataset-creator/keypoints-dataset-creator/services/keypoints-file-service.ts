@@ -5,12 +5,18 @@ import {Keypoint} from '../models/keypoint';
 import {ImageData} from '../../../commons/models/image-data';
 import {XmlFile} from '../../../commons/models/xml-file';
 import {KeypointsUtilsService} from './keypoints-utils.service';
-import {XmlFileCreatorService} from './xml-file-creator.service';
+import {KeypointsXmlFileCreatorService} from './keypoints-xml-file-creator.service';
 import {ZipFileCreatorService} from '../../../commons/services/zip-file-creator.service';
 
 @Injectable()
 export class KeypointsFileService extends BaseFilesService {
-  private xmlCreator: XmlFileCreatorService;
+  private xmlCreator: KeypointsXmlFileCreatorService;
+
+  constructor(xmlFileCreatorService: KeypointsXmlFileCreatorService) {
+    super();
+    this.fileReader = new FileReader();
+    this.xmlCreator = xmlFileCreatorService;
+  }
 
   generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
     return new Promise(resolve => {
