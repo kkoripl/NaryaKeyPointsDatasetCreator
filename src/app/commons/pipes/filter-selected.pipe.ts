@@ -1,5 +1,4 @@
-import {Injectable, Pipe, PipeTransform} from '@angular/core';
-import {UtilsModule} from '../utils.module';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'filterSelected'

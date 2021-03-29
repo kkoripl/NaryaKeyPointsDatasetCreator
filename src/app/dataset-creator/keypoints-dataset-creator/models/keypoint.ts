@@ -1,4 +1,6 @@
-export class Keypoint {
+import {DatasetElement} from '../../../commons/models/dataset-element';
+
+export class Keypoint extends DatasetElement {
   id: number;
   x: number;
   y: number;
@@ -6,6 +8,7 @@ export class Keypoint {
   heightFactor: number;
 
   constructor(point) {
+    super();
     this.x = point.x;
     this.y = point.y;
     this.widthFactor = point.widthFactor;

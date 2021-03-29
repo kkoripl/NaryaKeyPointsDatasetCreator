@@ -1,5 +1,8 @@
 <mat-toolbar class="darker-primary">
-  <a mat-button routerLink="/keypoints-dataset" routerLinkActive="active" style="color: white">Keypoints dataset creator</a>
+  <div>
+    <a mat-button routerLink="/keypoints-dataset" routerLinkActive #rlaKeypoints="routerLinkActive" [ngClass]="(rlaKeypoints.isActive) ? 'lastly-clicked-link': 'normal-link'">Keypoints dataset creator</a>
+    <a mat-button routerLink="/tracker-dataset" routerLinkActive #rlaTracker="routerLinkActive" [ngClass]="(rlaTracker.isActive) ? 'lastly-clicked-link': 'normal-link'">Tracker dataset creator</a>
+  </div>
 </mat-toolbar>
 <mat-divider class="accent-border"></mat-divider>
 

@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatDialogModule} from '@angular/material/dialog';
+
 import {NotificationService} from './services/notification.service';
 import {PathsGeneratorService} from './services/paths.generator.service';
+import {KonvaService} from './services/konva.service';
+import {NumbersUtilsService} from './services/numbers-utils.service';
 import {SpinnerService} from './dialogs/spinner/spinner.service';
 import {SpinnerComponent} from './dialogs/spinner/spinner.component';
 import {FilterSelectedPipe} from './pipes/filter-selected.pipe';
-import {FilesService} from './services/files.service';
-import {ImageData} from './models/image-data';
-import {XmlFile} from './models/xml-file';
-import {ImgFile} from './models/img-file';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatDialogModule} from '@angular/material/dialog';
+import {ArraysUtilsService} from './services/arrays-utils.service';
 
 @NgModule({
   declarations: [
@@ -25,8 +25,10 @@ import {MatDialogModule} from '@angular/material/dialog';
   providers: [
     NotificationService,
     PathsGeneratorService,
-    FilesService,
-    SpinnerService
+    SpinnerService,
+    KonvaService,
+    NumbersUtilsService,
+    ArraysUtilsService
   ]
 })
-export class UtilsModule { }
+export class CommonsModule { }
