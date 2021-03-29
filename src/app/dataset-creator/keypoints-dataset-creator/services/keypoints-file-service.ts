@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 
 import {BaseFilesService} from '../../../commons/services/base-files.service';
 import {Keypoint} from '../models/keypoint';
-import {ImageData} from '../../../commons/models/image-data';
-import {XmlFile} from '../../../commons/models/xml-file';
+import {XmlImageData} from '../../../commons/models/classes/xml-image-data';
+import {XmlFile} from '../../../commons/models/classes/xml-file';
 import {KeypointsUtilsService} from './keypoints-utils.service';
 import {KeypointsXmlFileCreatorService} from './keypoints-xml-file-creator.service';
 import {ZipFileCreatorService} from '../../../commons/services/zip-file-creator.service';
@@ -18,7 +18,7 @@ export class KeypointsFileService extends BaseFilesService {
     this.xmlCreator = xmlFileCreatorService;
   }
 
-  generateDataFiles(imgDatas: ImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
+  generateDataFiles(imgDatas: XmlImageData[], keyPoints: Keypoint[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
     return new Promise(resolve => {
       const xmlFiles = this.createXmlFiles(imgDatas, keyPoints);
       const imgFiles = this.createImageFiles(imgDatas);
@@ -28,7 +28,7 @@ export class KeypointsFileService extends BaseFilesService {
     });
   }
 
-  protected createXmlFiles(imgDatas: ImageData[], keyPoints: Keypoint[][]): XmlFile[] {
+  protected createXmlFiles(imgDatas: XmlImageData[], keyPoints: Keypoint[][]): XmlFile[] {
     const files = [];
     for (let i = 0; i < imgDatas.length ; i++) {
       files.push(this.createXmlFile(imgDatas[i], keyPoints[i]));
@@ -36,7 +36,7 @@ export class KeypointsFileService extends BaseFilesService {
     return files;
   }
 
-  protected createXmlFile(imgData: ImageData, keyPoints: Keypoint[]): XmlFile {
+  protected createXmlFile(imgData: XmlImageData, keyPoints: Keypoint[]): XmlFile {
     return this.xmlCreator.createXmlFile(imgData, keyPoints);
   }
 

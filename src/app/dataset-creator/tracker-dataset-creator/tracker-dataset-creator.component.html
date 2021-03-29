@@ -6,11 +6,11 @@
   <div class="spacer"></div>
   <mat-form-field class="input-headline">
     <mat-label>Image width</mat-label>
-    <input id="imgWidth" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgWidth" disabled="{{imagesLoadedAlready()}}">
+    <input id="imgWidth" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgDimension.width" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
   <mat-form-field class="input-headline">
     <mat-label>Image height</mat-label>
-    <input id="imgHeight" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgHeight" disabled="{{imagesLoadedAlready()}}">
+    <input id="imgHeight" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgDimension.height" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
   <mat-form-field class="input-headline">
     <mat-label>Image directory</mat-label>

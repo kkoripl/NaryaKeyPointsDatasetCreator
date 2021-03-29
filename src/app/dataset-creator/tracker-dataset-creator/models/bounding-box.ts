@@ -1,23 +1,22 @@
-import {DatasetElement} from '../../../commons/models/dataset-element';
-import {NumbersUtilsService} from '../../../commons/services/numbers-utils.service';
+import {DatasetElement} from '../../../commons/models/classes/dataset-element';
+import {NumbersUtilsService} from '../../../commons/services/utils/numbers-utils.service';
+import {ScaleFactors} from '../../../commons/models/interfaces/scale-factors';
 
 export class BoundingBox extends DatasetElement {
   x: number;
   y: number;
   width: number;
   height: number;
-  widthFactor: number;
-  heightFactor: number;
+  scaleFactors: ScaleFactors;
   label: string;
 
-  constructor(x: number, y: number, width: number, height: number, widthFactor: number, heightFactor: number) {
+  constructor(x: number, y: number, width: number, height: number, scaleFactors: ScaleFactors) {
     super();
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.widthFactor = widthFactor;
-    this.heightFactor = heightFactor;
+    this.scaleFactors = scaleFactors;
   }
 
   getXmax(): number {
@@ -29,18 +28,18 @@ export class BoundingBox extends DatasetElement {
   }
 
   getVisibleX(): number {
-    return NumbersUtilsService.scale(this.x, this.widthFactor);
+    return NumbersUtilsService.scale(this.x, this.scaleFactors.width);
   }
 
   getVisibleY(): number {
-    return NumbersUtilsService.scale(this.y, this.heightFactor);
+    return NumbersUtilsService.scale(this.y, this.scaleFactors.height);
   }
 
   getVisibleWidth(): number {
-    return NumbersUtilsService.scale(this.width, this.widthFactor);
+    return NumbersUtilsService.scale(this.width, this.scaleFactors.width);
   }
 
   getVisibleHeight(): number {
-    return NumbersUtilsService.scale(this.height, this.heightFactor);
+    return NumbersUtilsService.scale(this.height, this.scaleFactors.height);
   }
 }

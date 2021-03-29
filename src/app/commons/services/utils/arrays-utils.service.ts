@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 @Injectable()
 export class ArraysUtilsService {
-  static deleteElementFromList(list, elementToDelete) {
+  static findAndDeleteElement(list: any[], elementToDelete: any): any[] {
     const elementIdx = list.findIndex(listElement => listElement === elementToDelete);
     list.splice(elementIdx, 1);
     return list;
@@ -14,5 +14,9 @@ export class ArraysUtilsService {
       size += array[i].length;
     }
     return size;
+  }
+
+  static deleteElementsByIdx(source: any[], startElementIdx: number, elementsCount: number) {
+    source.splice(startElementIdx, elementsCount);
   }
 }

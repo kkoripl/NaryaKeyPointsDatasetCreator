@@ -1,16 +1,16 @@
 <mat-toolbar color="primary">
-  <button mat-button type="button" (click)="generateData()" disabled="{{missingData()}}">Generate data file</button>
+  <button (click)="generateData()" disabled="{{missingData()}}" mat-button type="button">Generate data file</button>
   <input style="display: none" type="file" multiple (change)="validateAndUpload($event)" #fileInput>
   <button mat-button type="button" (click)="fileInput.click()">Select images</button>
   <button mat-button type="button" (click)="navigateToInstruction()">Instruction</button>
   <div class="spacer"></div>
   <mat-form-field class="input-headline">
     <mat-label>Image width</mat-label>
-    <input id="imgWidth" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgWidth" disabled="{{imagesLoadedAlready()}}">
+    <input id="imgWidth" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgDimension.width" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
   <mat-form-field class="input-headline">
     <mat-label>Image height</mat-label>
-    <input id="imgHeight" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgHeight" disabled="{{imagesLoadedAlready()}}">
+    <input id="imgHeight" matInput type="number" min="0" max="512" [(ngModel)]="resizedImgDimension.height" disabled="{{imagesLoadedAlready()}}">
   </mat-form-field>
   <mat-form-field class="input-headline">
     <mat-label>Image directory</mat-label>

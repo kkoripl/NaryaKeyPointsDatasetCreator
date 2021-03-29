@@ -3,9 +3,11 @@ import {environment} from '../../../../environments/environment';
 import Konva from 'konva';
 
 import {KonvaService} from '../../../commons/services/konva.service';
-import {NumbersUtilsService} from '../../../commons/services/numbers-utils.service';
+import {NumbersUtilsService} from '../../../commons/services/utils/numbers-utils.service';
 import {BoundingBoxDataTaker} from '../callbacks/bounding-box-data-taker';
 import {BoundingBox} from '../models/bounding-box';
+import {KonvaStageData} from '../../../commons/models/interfaces/konva-stage-data';
+import {ScaleFactors} from '../../../commons/models/interfaces/scale-factors';
 
 @Injectable()
 export class TrackerBboxPainterService extends KonvaService {
@@ -25,20 +27,20 @@ export class TrackerBboxPainterService extends KonvaService {
     super();
   }
 
-  drawPicture(containerName: string, imageUrl: string, width: number, height: number, widthFactor: number, heightFactor: number,
-              bboxDataCallback: BoundingBoxDataTaker) {
-    this.imageStage = this.createStage(containerName, width, height);
+  drawPicture(stageData: KonvaStageData,
+              bboxDataCallback: BoundingBoxDataTaker): void {
+    this.imageStage = this.createStage(stageData.containerName, stageData.imageDimension);
     const mainLayer = this.createLayer(this.mainLayerConfig);
     const selectionLayer = this.createLayer(this.selectionLayerConfig);
     const text = this.createText(this.coordsTextConfig);
     const label = this.createLabel(text, this.coordslabelConfig);
-    this.loadImage(imageUrl, width, height, (image: Konva.Image) => {
-      image.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, widthFactor, heightFactor));
+    this.loadImage(stageData.imageUrl, stageData.imageDimension, (image: Konva.Image) => {
+      image.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, stageData.scaleFactors));
       image.on('mouseout', () => this.clearMousePosition(mainLayer, text));
       const bboxSelectionRect = this.setupCreatingBoundingBoxOnImage(image, this.imageStage, selectionLayer,
-                                                                     this.userBboxConfig, widthFactor, heightFactor,
+                                                                     this.userBboxConfig, stageData.scaleFactors,
                                                                      bboxDataCallback);
-      bboxSelectionRect.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, widthFactor, heightFactor));
+      bboxSelectionRect.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, stageData.scaleFactors));
       this.addElementsToLayer(mainLayer, [image, label]);
       this.addToLayer(selectionLayer, bboxSelectionRect);
       mainLayer.batchDraw();
@@ -47,7 +49,7 @@ export class TrackerBboxPainterService extends KonvaService {
     this.addElementsToStage(this.imageStage, [mainLayer, selectionLayer]);
   }
 
-  drawBoundingBoxes(bboxes: BoundingBox[]) {
+  drawBoundingBoxes(bboxes: BoundingBox[]): void {
     const bboxesRects: Konva.Rect[] = [];
     const mainLayer: Konva.Layer = this.findOneById(this.imageStage, this.mainLayerConfig.id);
     const selectionLayer: Konva.Layer = this.findOneById(this.imageStage, this.selectionLayerConfig.id);
@@ -81,7 +83,7 @@ export class TrackerBboxPainterService extends KonvaService {
   }
 
   setupCreatingBoundingBoxOnImage(image: Konva.Image, stage: Konva.Stage, layer: Konva.Layer,
-                                  bboxConfig: any, widthFactor: number, heightFactor: number,
+                                  bboxConfig: any, scaleFactors: ScaleFactors,
                                   bboxDataCallback: BoundingBoxDataTaker): Konva.Rect {
 
     let bboxTransformer = this.createTransformer(this.bboxTransformerConfig);
@@ -163,11 +165,11 @@ export class TrackerBboxPainterService extends KonvaService {
 
       // transformer is not resizing width and height, but their scales - respectively: x and y
       // that's why at the end we need to multiply width and height by their scales
-      bboxDataCallback(new BoundingBox(NumbersUtilsService.backToOriginal(bboxVisibleRect.x(), widthFactor),
-                                       NumbersUtilsService.backToOriginal(bboxVisibleRect.y(), heightFactor),
-                                       NumbersUtilsService.backToOriginal(bboxVisibleRect.width() * bboxVisibleRect.scaleX(), widthFactor),
-                                       NumbersUtilsService.backToOriginal(bboxVisibleRect.height() * bboxVisibleRect.scaleY(), heightFactor),
-                                       widthFactor, heightFactor));
+      bboxDataCallback(new BoundingBox(NumbersUtilsService.backToOriginal(bboxVisibleRect.x(), scaleFactors.width),
+                                       NumbersUtilsService.backToOriginal(bboxVisibleRect.y(), scaleFactors.height),
+                                       NumbersUtilsService.backToOriginal(bboxVisibleRect.width() * bboxVisibleRect.scaleX(), scaleFactors.width),
+                                       NumbersUtilsService.backToOriginal(bboxVisibleRect.height() * bboxVisibleRect.scaleY(), scaleFactors.height),
+                                       scaleFactors));
       this.resetTransformer(bboxTransformer);
       this.deleteFromLayer(layer, this.visibleBboxName);
       layer.draw();
@@ -176,13 +178,13 @@ export class TrackerBboxPainterService extends KonvaService {
     return bboxSelectionRect;
   }
 
-  makeVisibleButOfZeroSize(rect: Konva.Rect) {
+  makeVisibleButOfZeroSize(rect: Konva.Rect): void {
     rect.visible(true);
     rect.width(0);
     rect.height(0);
   }
 
-  updateRectSize(rect: Konva.Rect, leftUpper: any, rightLower: any) {
+  updateRectSize(rect: Konva.Rect, leftUpper: any, rightLower: any): void {
     rect.setAttrs({
       x: Math.min(leftUpper.x, rightLower.x),
       y: Math.min(leftUpper.y, rightLower.y),
@@ -191,7 +193,7 @@ export class TrackerBboxPainterService extends KonvaService {
     });
   }
 
-  initiateBboxPosition(stage: Konva.Stage, upperLeft: any, rightLower: any) {
+  initiateBboxPosition(stage: Konva.Stage, upperLeft: any, rightLower: any): void {
     const mousePosition = this.getMousePosition(this.imageStage);
     upperLeft.x = mousePosition.x;
     upperLeft.y = mousePosition.y;
@@ -199,24 +201,24 @@ export class TrackerBboxPainterService extends KonvaService {
     rightLower.y = mousePosition.y;
   }
 
-  updateRightLowerPosition(stage: Konva.Stage, rightLower: any) {
+  updateRightLowerPosition(stage: Konva.Stage, rightLower: any): void {
     const mousePosition = this.getMousePosition(this.imageStage);
     rightLower.x = mousePosition.x;
     rightLower.y = mousePosition.y;
   }
 
-  createTransformerForElement(config: any, element: any) {
+  createTransformerForElement(config: any, element: any): Konva.Transformer {
     const transformer = this.createTransformer(config);
     transformer.nodes([element]);
     return transformer;
   }
 
-  resetTransformer(transformer: Konva.Transformer) {
+  resetTransformer(transformer: Konva.Transformer): void {
     transformer.nodes([]);
     transformer.visible(false);
   }
 
-  setupSelectionRectToVisibleRectConfig(config: any, selectionRect: Konva.Rect) {
+  setupSelectionRectToVisibleRectConfig(config: any, selectionRect: Konva.Rect): void {
     config.id = this.visibleBboxName;
     config.x = selectionRect.x();
     config.y = selectionRect.y();
@@ -224,7 +226,7 @@ export class TrackerBboxPainterService extends KonvaService {
     config.height = selectionRect.height();
   }
 
-  updateBboxConfigForFinishedBboxes(config: any, bbox: BoundingBox) {
+  updateBboxConfigForFinishedBboxes(config: any, bbox: BoundingBox): void {
     config.x = bbox.getVisibleX();
     config.y = bbox.getVisibleY();
     config.width = bbox.getVisibleWidth();

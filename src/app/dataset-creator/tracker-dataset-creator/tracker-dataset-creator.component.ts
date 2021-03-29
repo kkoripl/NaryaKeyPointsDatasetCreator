@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {environment} from '../../../environments/environment';
 import {MatTableDataSource} from '@angular/material/table';
 
 import {NotificationService} from '../../commons/services/notification.service';
 import {SpinnerService} from '../../commons/dialogs/spinner/spinner.service';
 import {TrackerBboxPainterService} from './services/tracker-bbox-painter.service';
 import {TrackerFileService} from './services/tracker-file.service';
-import {ArraysUtilsService} from '../../commons/services/arrays-utils.service';
+import {ArraysUtilsService} from '../../commons/services/utils/arrays-utils.service';
 import {BoundingBoxLabel} from './enums/bounding-box-label';
-import {ImageData} from '../../commons/models/image-data';
+import {XmlImageData} from '../../commons/models/classes/xml-image-data';
 import {BoundingBox} from './models/bounding-box';
+import {ImageDimension} from '../../commons/models/interfaces/image-dimension';
+import {DatasetCreatorComponent} from '../dataset-creator.component';
+import {ScaleFactors} from '../../commons/models/interfaces/scale-factors';
+import {KonvaStageData} from '../../commons/models/interfaces/konva-stage-data';
+import {MatTableUtilsService} from '../../commons/services/utils/mat-table-utils.service';
 
 @Component({
   selector: 'app-tracker-dataset-creator',
@@ -24,7 +28,7 @@ import {BoundingBox} from './models/bounding-box';
     ]),
   ]
 })
-export class TrackerDatasetCreatorComponent implements OnInit {
+export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent implements OnInit {
   boundingBoxLabels = Object.values(BoundingBoxLabel);
 
   fileService: TrackerFileService;
@@ -32,32 +36,20 @@ export class TrackerDatasetCreatorComponent implements OnInit {
   notifications: NotificationService;
   spinnerService: SpinnerService;
 
-  resizedImgHeight = environment.defaults.resizedImgHeight;
-  resizedImgWidth = environment.defaults.resizedImgWidth;
-  visibleImgHeight = environment.defaults.visibleImgHeight;
-  visibleImgWidth = environment.defaults.visibleImgWidth;
-  imgDirectory = environment.defaults.imgDirectory;
-  zipFileName = environment.defaults.zipFile;
   imageContainer = 'tracking-test-container';
-  resizeContainer = environment.containers.resize;
-  instructionUrl = environment.instructionUrl;
-
   bboxDisplayedColumns: string[] = ['x', 'y', 'width', 'height', 'label', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   bboxesTableData: MatTableDataSource<any>[] = [];
   imagesTableData = new MatTableDataSource;
 
-  expandedImage: any;
-  expandedImageId: number;
   bboxes: BoundingBox[][] = [];
-  imgData: ImageData[] = [];
-
   selectedBbox: BoundingBox;
 
   constructor(fileService: TrackerFileService,
               bboxPainter: TrackerBboxPainterService,
               notifications: NotificationService,
               spinnerService: SpinnerService) {
+    super();
     this.fileService = fileService;
     this.bboxPainter = bboxPainter;
     this.notifications = notifications;
@@ -70,7 +62,7 @@ export class TrackerDatasetCreatorComponent implements OnInit {
     this.resetSelection();
   }
 
-  validateAndUpload($event) {
+  validateAndUpload($event): void {
     if (this.fileService.validFileTypes($event)) {
       this.uploadImages($event);
     } else {
@@ -78,53 +70,51 @@ export class TrackerDatasetCreatorComponent implements OnInit {
     }
   }
 
-  private uploadImages(event) {
+  protected uploadImages(event): void {
     const spinnerRef = this.spinnerService.start('Loading pictures...');
     this.fileService.uploadFiles(event);
     const newImagesNames = this.fileService.getNewFilesNames(event);
     this.enlargeImageTableData(newImagesNames, this.imagesTableData);
-    this.enlargeBboxArray(newImagesNames.length, this.bboxes);
-    this.enlargeBboxTableData(newImagesNames, this.bboxesTableData);
+    this.enlargeElementsArray(newImagesNames.length, this.bboxes);
+    this.enlargeElementsTableData(newImagesNames, this.bboxesTableData);
     this.enlargeImageData(newImagesNames).then(() => {
       this.spinnerService.stop(spinnerRef);
     });
   }
 
-  private makeImgData(imageName: string, imageIdx: number): Promise<ImageData> {
+  protected makeImgData(imageName: string, imageIdx: number): Promise<XmlImageData> {
     return new Promise(resolve => {
       this.fileService.getDataUrl(imageIdx).then((url: string) => {
-        this.bboxPainter.getResizedDataUrl(this.resizeContainer, url, this.resizedImgWidth, this.resizedImgHeight)
+        const resizedStageData: KonvaStageData = {
+          containerName: this.resizeContainer,
+          imageUrl: url,
+          imageDimension: this.resizedImgDimension,
+          scaleFactors: null
+        };
+
+        this.bboxPainter.getResizedDataUrl(resizedStageData)
           .then((dataUrl: string) => {
-            resolve(new ImageData(this.imgDirectory, imageName, dataUrl, this.resizedImgWidth, this.resizedImgHeight));
+            resolve(new XmlImageData(this.imgDirectory, imageName, dataUrl, this.resizedImgDimension));
           });
       });
     });
   }
 
-  private enlargeImageTableData(imagesNames: string[], imageTableData: MatTableDataSource<any>) {
-    const imgDetails = imageTableData.data;
-    const newDetailStartIdx = imgDetails.length;
-    for (let i = 0; i < imagesNames.length; i++) {
-      imgDetails.push({id: newDetailStartIdx + i, name: imagesNames[i]});
-    }
-    imageTableData.data = imgDetails;
-  }
-
-  private enlargeBboxArray(imagesCnt: number, bboxes: BoundingBox[][]) {
+  protected enlargeElementsArray(imagesCnt: number, bboxes: BoundingBox[][]): void {
     for (let i = 0; i < imagesCnt; i++) {
       bboxes.push([]);
     }
   }
 
-  private enlargeBboxTableData(imagesNames: string[], bboxesTableSource: MatTableDataSource<any>[]) {
+  protected enlargeElementsTableData(imagesNames: string[], bboxesTableSource: MatTableDataSource<any>[]): void {
     for (let i = this.bboxes.length - imagesNames.length; i < this.bboxes.length; i++) {
-      const data = new MatTableDataSource;
-      data.data = this.bboxes[i];
-      bboxesTableSource.push(data);
+      const matTableData = new MatTableDataSource;
+      MatTableUtilsService.setData(this.bboxes[i], matTableData);
+      bboxesTableSource.push(matTableData);
     }
   }
 
-  private async enlargeImageData(imagesNames: string[]) {
+  protected async enlargeImageData(imagesNames: string[]) {
     const startIdx = this.imgData.length;
     for (let i = 0; i < imagesNames.length; i++) {
       const data = await this.makeImgData(imagesNames[i], (startIdx + i));
@@ -136,41 +126,40 @@ export class TrackerDatasetCreatorComponent implements OnInit {
     return this.bboxesTableData[imageIdx];
   }
 
-  deleteImage(imageIdx: number) {
+  deleteImage(imageIdx: number): void {
     if (this.bboxes && this.bboxes[imageIdx].indexOf(this.selectedBbox) !== -1) {
       this.resetSelection();
     }
-    this.imgData.splice(imageIdx, 1);
-    this.bboxesTableData.splice(imageIdx, 1);
-    this.bboxes.splice(imageIdx, 1);
-    const imagesTableData = this.imagesTableData.data;
-    imagesTableData.splice(imageIdx, 1);
-    this.imagesTableData.data = imagesTableData;
+
+    ArraysUtilsService.deleteElementsByIdx(this.imgData, imageIdx, 1);
+    ArraysUtilsService.deleteElementsByIdx(this.bboxesTableData, imageIdx, 1);
+    ArraysUtilsService.deleteElementsByIdx(this.bboxes, imageIdx, 1);
+    MatTableUtilsService.removeElementsByIdx(this.imagesTableData, imageIdx, 1);
     this.fileService.removeFile(imageIdx);
     this.resetExpanded();
   }
 
-  addNewBbox(bbox: BoundingBox, imageIdx: number) {
+  addNewBbox(bbox: BoundingBox, imageIdx: number): void {
     if (this.selectedBbox && this.selectedBbox.label === undefined) {
       this.notifications.showError('Finish creating bounding box', 'Before changing to other bounding box, add label to last one.');
     } else {
       this.bboxes[imageIdx].push(bbox);
-      this.bboxesTableData[imageIdx].data = this.bboxes[imageIdx];
+      MatTableUtilsService.setData(this.bboxes[imageIdx], this.bboxesTableData[imageIdx]);
       this.selectedBbox = bbox;
       this.drawUserBboxes(this.bboxes[imageIdx]);
     }
   }
 
-  deleteBbox(bboxToDelete: BoundingBox, imageIdx: number) {
-    this.bboxes[imageIdx] = ArraysUtilsService.deleteElementFromList(this.bboxes[imageIdx], bboxToDelete);
+  deleteBbox(bboxToDelete: BoundingBox, imageIdx: number): void {
+    this.bboxes[imageIdx] = ArraysUtilsService.findAndDeleteElement(this.bboxes[imageIdx], bboxToDelete);
     if (bboxToDelete === this.selectedBbox) {
       this.resetSelection();
     }
-    this.bboxesTableData[imageIdx].data = this.bboxes[imageIdx];
+    MatTableUtilsService.setData(this.bboxes[imageIdx], this.bboxesTableData[imageIdx]);
     this.drawUserBboxes(this.bboxes[imageIdx]);
   }
 
-  generateData() {
+  generateData(): void {
     const spinnerRef = this.spinnerService.start('Generating data...');
     this.fileService.generateDataFiles(this.imgData, this.bboxes, this.zipFileName, this.imgDirectory)
       .then(() => {
@@ -178,46 +167,45 @@ export class TrackerDatasetCreatorComponent implements OnInit {
       });
   }
 
-  imagesLoadedAlready(): boolean {
-    return this.imgData.length !== 0;
-  }
-
   missingData(): boolean {
     return (this.imgData.length === 0
-      || this.resizedImgHeight === undefined || this.resizedImgWidth === undefined
+      || this.resizedImgDimension.width === undefined || this.resizedImgDimension.height === undefined
       || this.imgDirectory === undefined || ArraysUtilsService.count2dElements(this.bboxes) === 0
       || this.bboxes.filter((bboxes1d: []) =>
         bboxes1d.filter((bbox: BoundingBox) => (bbox.label === undefined || bbox.label === null)).length !== 0
       ).length !== 0);
   }
 
-  expandAndDrawImages(imageRowData: any, imageRowIdx: number) {
+  expandAndDrawImages(imageRowData: any, imageRowIdx: number): void {
     this.fileService.getDataUrl(imageRowIdx)
       .then((url: string) => {
-        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgWidth, this.visibleImgHeight);
+        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension);
         this.drawUserBboxes(this.bboxes[imageRowIdx]);
       });
     this.setExpandedImage(imageRowData, imageRowIdx);
   }
 
-  private drawPicture(containerName: string, imageUrl: string, width: number, height: number) {
-    const widthFactor = width / this.resizedImgWidth;
-    const heightFactor = height / this.resizedImgHeight;
-    this.bboxPainter.drawPicture(containerName,
+  protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void {
+    const scaleFactors: ScaleFactors = {
+      width: visibleImgDim.width / resizedImgDim.width, height: visibleImgDim.height / resizedImgDim.height
+    };
+
+    const stageData: KonvaStageData = {
+      containerName,
       imageUrl,
-      width,
-      height,
-      widthFactor,
-      heightFactor,
-      (bbox) => this.addNewBbox(bbox, this.expandedImageId));
+      imageDimension: visibleImgDim,
+      scaleFactors
+    };
+
+    this.bboxPainter.drawPicture(stageData, (bbox: BoundingBox) => this.addNewBbox(bbox, this.expandedImageId));
   }
 
 
-  private drawUserBboxes(bboxes: BoundingBox[]) {
+  private drawUserBboxes(bboxes: BoundingBox[]): void {
     this.bboxPainter.drawBoundingBoxes(bboxes);
   }
 
-  changeSelection(bbox: BoundingBox) {
+  changeSelection(bbox: BoundingBox): void {
     if (this.selectedBbox && this.selectedBbox !== bbox && this.selectedBbox.label === undefined) {
       // tslint:disable-next-line:max-line-length
       this.notifications.showError('Finish creating bounding box', 'Before changing to other bounding box, add label to last one.');
@@ -228,22 +216,7 @@ export class TrackerDatasetCreatorComponent implements OnInit {
     }
   }
 
-  private resetSelection() {
+  protected resetSelection(): void {
     this.selectedBbox = undefined;
   }
-
-  private setExpandedImage(imageRowData: any, imageRowId: number) {
-    this.expandedImage = this.expandedImage === imageRowData ? null : imageRowData;
-    this.expandedImageId = this.expandedImageId === imageRowId ? null : imageRowId;
-  }
-
-  private resetExpanded() {
-    this.expandedImage = undefined;
-    this.expandedImageId = undefined;
-  }
-
-  navigateToInstruction(){
-    window.open(this.instructionUrl, '_blank');
-  }
-
 }

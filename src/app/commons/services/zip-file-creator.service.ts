@@ -1,7 +1,7 @@
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
-import {XmlFile} from '../models/xml-file';
-import {ImgFile} from '../models/img-file';
+import {XmlFile} from '../models/classes/xml-file';
+import {ImgFile} from '../models/classes/img-file';
 import {Injectable} from '@angular/core';
 
 @Injectable()
@@ -29,19 +29,19 @@ export class ZipFileCreatorService {
     return zip.folder(directoryName);
   }
 
-  private static addImages(images: ImgFile[], imagesDirectory) {
+  private static addImages(images: ImgFile[], imagesDirectory): void {
     images.forEach((image) => {
       imagesDirectory.file(image.name, image.blob, {binary: true});
     });
   }
 
-  private static addXmls(xmls: XmlFile[], xmlDirectory) {
+  private static addXmls(xmls: XmlFile[], xmlDirectory): void {
     xmls.forEach((xml) => {
       xmlDirectory.file(xml.name, xml.content);
     });
   }
 
-  private static addFile(filename: string, statsFileContent: string, zip) {
+  private static addFile(filename: string, statsFileContent: string, zip): void {
     zip.file(filename, statsFileContent);
   }
 }

@@ -4,6 +4,8 @@ import Konva from 'konva';
 
 import {Keypoint} from '../models/keypoint';
 import {KonvaService} from '../../../commons/services/konva.service';
+import {KonvaStageData} from '../../../commons/models/interfaces/konva-stage-data';
+import {KeypointDataTaker} from '../callbacks/keypoint-data-taker';
 
 @Injectable()
 export class KeypointsPainterService extends KonvaService {
@@ -27,23 +29,22 @@ export class KeypointsPainterService extends KonvaService {
     super();
   }
 
-  // tslint:disable-next-line:max-line-length
-  drawPicture(containerName: string, imageUrl: string, width: number, height: number, widthFactor: number, heightFactor: number, clickCallback) {
-    this.imageStage = this.createStage(containerName, width, height);
+  drawPicture(imageData: KonvaStageData, clickCallback: KeypointDataTaker): void {
+    this.imageStage = this.createStage(imageData.containerName, imageData.imageDimension);
     const mainLayer = this.createLayer(this.mainLayerConfig);
     const text = this.createText(this.coordsTextConfig);
     const label = this.createLabel(text, this.coordslabelConfig);
-    this.loadImage(imageUrl, width, height, (image: Konva.Image) => {
-      image.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, widthFactor, heightFactor));
+    this.loadImage(imageData.imageUrl, imageData.imageDimension, (image: Konva.Image) => {
+      image.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, imageData.scaleFactors));
       image.on('mouseout', () => this.clearMousePosition(mainLayer, text));
-      image.on('click', () => clickCallback(this.mapMousePosition(this.getMousePosition(this.imageStage), widthFactor, heightFactor)));
+      image.on('click', () => clickCallback(this.mapMousePosition(this.getMousePosition(this.imageStage), imageData.scaleFactors)));
       this.addElementsToLayer(mainLayer, [image, label]);
       mainLayer.batchDraw();
     });
     this.addToStage(this.imageStage, mainLayer);
   }
 
-  drawKeyPoints(keypoints: Keypoint[]) {
+  drawKeyPoints(keypoints: Keypoint[]): void {
     const keyPointsCircles: Konva.Circle[] = [];
 
     this.deleteLayerFromStage(this.keyPointsLayerName, this.imageStage);
@@ -61,17 +62,17 @@ export class KeypointsPainterService extends KonvaService {
     this.addToStage(this.imageStage, newKeyPointsLayer);
   }
 
-  drawTemplate(containerName: string, templateUrl: string, width: number, height: number) {
-    this.templateStage = this.createStage(containerName, width, height);
+  drawTemplate(templateData: KonvaStageData): void {
+    this.templateStage = this.createStage(templateData.containerName, templateData.imageDimension);
     const layer = this.createLayer(this.templateKeyPointsLayerConfig);
-    this.loadImage(templateUrl, width, height, (image: Konva.Image) => {
+    this.loadImage(templateData.imageUrl, templateData.imageDimension, (image: Konva.Image) => {
       this.addToLayer(layer, image);
       layer.batchDraw();
     });
     this.addToStage(this.templateStage, layer);
   }
 
-  drawTemplateKeyPoints(keypoints: Keypoint[], callback) {
+  drawTemplateKeyPoints(keypoints: Keypoint[], callback): void {
     const selectedKeyPointsIds = keypoints.map((keypoint) => keypoint.id);
     const selectedKeyPoints = this.templateKeyPoints.filter((keypoint) => selectedKeyPointsIds.indexOf(keypoint.id) !== -1);
     const availableKeyPoints = this.templateKeyPoints.filter((keypoint) => selectedKeyPointsIds.indexOf(keypoint.id) === -1);
@@ -85,7 +86,7 @@ export class KeypointsPainterService extends KonvaService {
     this.addToStage(this.templateStage, keyPointsLayer);
   }
 
-  private drawSelectedTemplateKeyPoints(layer: Konva.Layer, points: any[]) {
+  private drawSelectedTemplateKeyPoints(layer: Konva.Layer, points: any[]): void {
     const keyPointsCircles = [];
     points.forEach((point: any) => {
       const selectedConfig = this.createKeyPointTemplateConfig(point, this.templateSelectedConfig);
@@ -98,7 +99,7 @@ export class KeypointsPainterService extends KonvaService {
     layer.draw();
   }
 
-  private drawAvailableTemplateKeyPoints(layer: Konva.Layer, points: any[], callback) {
+  private drawAvailableTemplateKeyPoints(layer: Konva.Layer, points: any[], callback): void {
     const keyPointsCircles = [];
     points.forEach((point: any) => {
       const availableConfig = this.createKeyPointTemplateConfig(point, this.templateAvailableConfig);

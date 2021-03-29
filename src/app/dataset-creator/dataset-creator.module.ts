@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatTableModule} from '@angular/material/table';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -15,12 +15,10 @@ import {CommonsModule} from '../commons/commons.module';
 import {KeyPointsDatasetCreatorComponent} from './keypoints-dataset-creator/keypoints-dataset-creator.component';
 import {KeypointsPainterService} from './keypoints-dataset-creator/services/keypoints-painter.service';
 import {KeypointsXmlFileCreatorService} from './keypoints-dataset-creator/services/keypoints-xml-file-creator.service';
-import {ZipFileCreatorService} from '../commons/services/zip-file-creator.service';
 import {KeypointsUtilsService} from './keypoints-dataset-creator/services/keypoints-utils.service';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {TrackerDatasetCreatorComponent} from './tracker-dataset-creator/tracker-dataset-creator.component';
 import {TrackerBboxPainterService} from './tracker-dataset-creator/services/tracker-bbox-painter.service';
-import {DatasetCreatorComponent} from './dataset-creator.component';
 import {MatSelectModule} from '@angular/material/select';
 import {KeypointsFileService} from './keypoints-dataset-creator/services/keypoints-file-service';
 import {TrackerFileService} from './tracker-dataset-creator/services/tracker-file.service';
@@ -28,7 +26,6 @@ import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/t
 
 @NgModule({
   declarations: [
-    DatasetCreatorComponent,
     KeyPointsDatasetCreatorComponent,
     TrackerDatasetCreatorComponent
   ],
@@ -51,12 +48,11 @@ import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/t
   providers: [
     KeypointsPainterService,
     KeypointsFileService,
+    KeypointsUtilsService,
+    KeypointsXmlFileCreatorService,
     TrackerBboxPainterService,
     TrackerXmlFileCreatorService,
-    TrackerFileService,
-    KeypointsXmlFileCreatorService,
-    ZipFileCreatorService,
-    KeypointsUtilsService
+    TrackerFileService
   ],
   bootstrap: []
 })

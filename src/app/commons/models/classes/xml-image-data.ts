@@ -1,17 +1,17 @@
-export class ImageData {
+import {ImageDimension} from '../interfaces/image-dimension';
+
+export class XmlImageData {
   directory: string;
   filename: string;
   dataUrl: string;
-  width: number;
-  height: number;
+  dimension: ImageDimension;
   depth = 3;
 
-  constructor(directory: string, filename: string, dataUrl: string, width: number, height: number) {
+  constructor(directory: string, filename: string, dataUrl: string, dimension: ImageDimension) {
     this.directory = directory;
     this.filename = filename;
     this.dataUrl = dataUrl;
-    this.width = width;
-    this.height = height;
+    this.dimension = dimension;
   }
 
   getFilenameWoExtension(): string {

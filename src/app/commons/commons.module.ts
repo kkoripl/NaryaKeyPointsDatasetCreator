@@ -1,16 +1,18 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatDialogModule} from '@angular/material/dialog';
 
 import {NotificationService} from './services/notification.service';
 import {PathsGeneratorService} from './services/paths.generator.service';
 import {KonvaService} from './services/konva.service';
-import {NumbersUtilsService} from './services/numbers-utils.service';
+import {NumbersUtilsService} from './services/utils/numbers-utils.service';
 import {SpinnerService} from './dialogs/spinner/spinner.service';
 import {SpinnerComponent} from './dialogs/spinner/spinner.component';
 import {FilterSelectedPipe} from './pipes/filter-selected.pipe';
-import {ArraysUtilsService} from './services/arrays-utils.service';
+import {ArraysUtilsService} from './services/utils/arrays-utils.service';
+import {ZipFileCreatorService} from './services/zip-file-creator.service';
+import {MatTableUtilsService} from './services/utils/mat-table-utils.service';
 
 @NgModule({
   declarations: [
@@ -27,8 +29,10 @@ import {ArraysUtilsService} from './services/arrays-utils.service';
     PathsGeneratorService,
     SpinnerService,
     KonvaService,
+    ZipFileCreatorService,
     NumbersUtilsService,
-    ArraysUtilsService
+    ArraysUtilsService,
+    MatTableUtilsService
   ]
 })
 export class CommonsModule { }

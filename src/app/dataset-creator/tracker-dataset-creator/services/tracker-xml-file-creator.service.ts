@@ -8,7 +8,7 @@ import {BoundingBox} from '../models/bounding-box';
 export class TrackerXmlFileCreatorService extends XmlFileBaseCreatorService{
   bboxesTags = environment.xmlTags.bbox;
 
-  protected createElement(xmlWriter: any, elementData: BoundingBox) {
+  protected createElement(xmlWriter: any, elementData: BoundingBox): void {
     xmlWriter
       .startElement(this.bboxesTags.object)
         .writeElement(this.bboxesTags.label, elementData.label)

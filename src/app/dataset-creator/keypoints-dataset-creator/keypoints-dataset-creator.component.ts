@@ -8,9 +8,15 @@ import {SpinnerService} from '../../commons/dialogs/spinner/spinner.service';
 import {PathsGeneratorService} from '../../commons/services/paths.generator.service';
 import {KeypointsPainterService} from './services/keypoints-painter.service';
 import {KeypointsFileService} from './services/keypoints-file-service';
-import {ArraysUtilsService} from '../../commons/services/arrays-utils.service';
-import {ImageData} from '../../commons/models/image-data';
+import {ArraysUtilsService} from '../../commons/services/utils/arrays-utils.service';
+import {XmlImageData} from '../../commons/models/classes/xml-image-data';
 import {Keypoint} from './models/keypoint';
+import {ImageDimension} from '../../commons/models/interfaces/image-dimension';
+import {ScaleFactors} from '../../commons/models/interfaces/scale-factors';
+import {KonvaStageData} from '../../commons/models/interfaces/konva-stage-data';
+import {DatasetCreatorComponent} from '../dataset-creator.component';
+import {MousePosition} from '../../commons/models/interfaces/mouse-position';
+import {MatTableUtilsService} from '../../commons/services/utils/mat-table-utils.service';
 
 
 @Component({
@@ -25,40 +31,28 @@ import {Keypoint} from './models/keypoint';
     ]),
   ]
 })
-export class KeyPointsDatasetCreatorComponent implements OnInit {
+export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent implements OnInit {
   fileService: KeypointsFileService;
   keyPointsPainter: KeypointsPainterService;
   notifications: NotificationService;
   spinnerService: SpinnerService;
 
-  resizedImgHeight = environment.defaults.resizedImgHeight;
-  resizedImgWidth = environment.defaults.resizedImgWidth;
-  visibleImgHeight = environment.defaults.visibleImgHeight;
-  visibleImgWidth = environment.defaults.visibleImgWidth;
-  imgDirectory = environment.defaults.imgDirectory;
-  zipFileName = environment.defaults.zipFile;
-  templateConfig = environment.templateImg;
-  imageContainer = environment.containers.image;
+  templateImgDimension: ImageDimension = {width: environment.templateImg.width, height: environment.templateImg.height};
   templateContainer = environment.containers.template;
-  resizeContainer = environment.containers.resize;
-  instructionUrl = environment.instructionUrl;
 
   keyPointsDisplayedColumns: string[] = ['id', 'x', 'y', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   keyPointsTableData: MatTableDataSource<any>[] = [];
   imagesTableData = new MatTableDataSource;
 
-  expandedImage: any;
-  expandedImageId: number;
   keyPoints: Keypoint[][] = [];
-  imgData: ImageData[] = [];
-
   selectedKeyPoint: Keypoint;
 
   constructor(fileUploaderService: KeypointsFileService,
               keyPointsPainter: KeypointsPainterService,
               notificationService: NotificationService,
               spinnerService: SpinnerService) {
+    super();
     this.fileService = fileUploaderService;
     this.keyPointsPainter = keyPointsPainter;
     this.notifications = notificationService;
@@ -71,7 +65,7 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
     this.resetSelection();
   }
 
-  validateAndUpload($event) {
+  validateAndUpload($event): void {
     if (this.fileService.validFileTypes($event)) {
       this.uploadImages($event);
     } else {
@@ -79,53 +73,33 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
     }
   }
 
-  private uploadImages(event) {
+  protected uploadImages($event): void {
     const spinnerRef = this.spinnerService.start('Loading pictures...');
-    this.fileService.uploadFiles(event);
-    const newImagesNames = this.fileService.getNewFilesNames(event);
+    this.fileService.uploadFiles($event);
+    const newImagesNames = this.fileService.getNewFilesNames($event);
     this.enlargeImageTableData(newImagesNames, this.imagesTableData);
-    this.enlargeKeyPointsArray(newImagesNames.length, this.keyPoints);
-    this.enlargeKeyPointsTableData(newImagesNames, this.keyPointsTableData);
+    this.enlargeElementsArray(newImagesNames.length, this.keyPoints);
+    this.enlargeElementsTableData(newImagesNames, this.keyPointsTableData);
     this.enlargeImageData(newImagesNames).then(() => {
       this.spinnerService.stop(spinnerRef);
     });
   }
 
-  private makeImgData(imageName: string, imageIdx: number): Promise<ImageData> {
-    return new Promise(resolve => {
-      this.fileService.getDataUrl(imageIdx).then((url: string) => {
-        this.keyPointsPainter.getResizedDataUrl(this.resizeContainer, url, this.resizedImgWidth, this.resizedImgHeight)
-          .then((dataUrl: string) => {
-            resolve(new ImageData(this.imgDirectory, imageName, dataUrl, this.resizedImgWidth, this.resizedImgHeight));
-          });
-      });
-    });
-  }
-
-  private enlargeImageTableData(imagesNames: string[], imageTableData: MatTableDataSource<any>) {
-    const imgDetails = imageTableData.data;
-    const newDetailStartIdx = imgDetails.length;
-    for (let i = 0; i < imagesNames.length; i++) {
-      imgDetails.push({id: newDetailStartIdx + i, name: imagesNames[i]});
-    }
-    imageTableData.data = imgDetails;
-  }
-
-  private enlargeKeyPointsArray(imagesCnt: number, keyPoints: Keypoint[][]) {
+  protected enlargeElementsArray(imagesCnt: number, keyPoints: Keypoint[][]): void {
     for (let i = 0; i < imagesCnt; i++) {
       keyPoints.push([]);
     }
   }
 
-  private enlargeKeyPointsTableData(imagesNames: string[], keyPointsTableSource: MatTableDataSource<any>[]) {
+  protected enlargeElementsTableData(imagesNames: string[], keyPointsTableSource: MatTableDataSource<any>[]): void {
     for (let i = this.keyPoints.length - imagesNames.length; i < this.keyPoints.length; i++) {
-      const data = new MatTableDataSource;
-      data.data = this.keyPoints[i];
-      keyPointsTableSource.push(data);
+      const matTableData = new MatTableDataSource;
+      MatTableUtilsService.setData(this.keyPoints[i], matTableData);
+      keyPointsTableSource.push(matTableData);
     }
   }
 
-  private async enlargeImageData(imagesNames: string[]) {
+  protected async enlargeImageData(imagesNames: string[]) {
     const startIdx = this.imgData.length;
     for (let i = 0; i < imagesNames.length; i++) {
       const data = await this.makeImgData(imagesNames[i], (startIdx + i));
@@ -133,47 +107,64 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
     }
   }
 
+  protected makeImgData(imageName: string, imageIdx: number): Promise<XmlImageData> {
+    return new Promise(resolve => {
+      this.fileService.getDataUrl(imageIdx).then((url: string) => {
+        const resizedStageData: KonvaStageData = {
+          containerName: this.resizeContainer,
+          imageUrl: url,
+          imageDimension: this.resizedImgDimension,
+          scaleFactors: null
+        };
+
+        this.keyPointsPainter.getResizedDataUrl(resizedStageData)
+          .then((dataUrl: string) => {
+            resolve(new XmlImageData(this.imgDirectory, imageName, dataUrl, this.resizedImgDimension));
+          });
+      });
+    });
+  }
+
   getKeyPointData(imageIdx: number): MatTableDataSource<any> {
     return this.keyPointsTableData[imageIdx];
   }
 
-  deleteImage(imageIdx: number) {
+  deleteImage(imageIdx: number): void {
     if (this.keyPoints && this.keyPoints[imageIdx].indexOf(this.selectedKeyPoint) !== -1) {
       this.resetSelection();
     }
-    this.imgData.splice(imageIdx, 1);
-    this.keyPointsTableData.splice(imageIdx, 1);
-    this.keyPoints.splice(imageIdx, 1);
-    const imagesTableData = this.imagesTableData.data;
-    imagesTableData.splice(imageIdx, 1);
-    this.imagesTableData.data = imagesTableData;
+
+    ArraysUtilsService.deleteElementsByIdx(this.imgData, imageIdx, 1);
+    ArraysUtilsService.deleteElementsByIdx(this.keyPointsTableData, imageIdx, 1);
+    ArraysUtilsService.deleteElementsByIdx(this.keyPoints, imageIdx, 1);
+    MatTableUtilsService.removeElementsByIdx(this.imagesTableData, imageIdx, 1);
     this.fileService.removeFile(imageIdx);
     this.resetExpanded();
   }
 
-  addNewKeyPoint(point: any, imageIdx: number) {
+  addNewKeyPoint(point: MousePosition, imageIdx: number): void {
     if (this.selectedKeyPoint && this.selectedKeyPoint.id === undefined) {
       this.notifications.showError('Pick keypoint id', 'Before adding new keypoint, add to existing one, id from pitch template below.');
     } else {
       const keypoint = new Keypoint(point);
       this.keyPoints[imageIdx].push(keypoint);
-      this.keyPointsTableData[imageIdx].data = this.keyPoints[imageIdx];
+      MatTableUtilsService.setData(this.keyPoints[imageIdx], this.keyPointsTableData[imageIdx]);
       this.selectedKeyPoint = keypoint;
       this.drawUserKeyPoints(this.keyPoints[imageIdx]);
     }
   }
 
-  deleteKeypoint(keypointToDelete: Keypoint, imageIdx: number) {
-    this.keyPoints[imageIdx] = ArraysUtilsService.deleteElementFromList(this.keyPoints[imageIdx], keypointToDelete);
+  deleteKeypoint(keypointToDelete: Keypoint, imageIdx: number): void {
+    this.keyPoints[imageIdx] = ArraysUtilsService.findAndDeleteElement(this.keyPoints[imageIdx], keypointToDelete);
     if (keypointToDelete === this.selectedKeyPoint) {
       this.resetSelection();
     }
-    this.keyPointsTableData[imageIdx].data = this.keyPoints[imageIdx];
+    MatTableUtilsService.setData(this.keyPoints[imageIdx], this.keyPointsTableData[imageIdx]);
     this.drawUserKeyPoints(this.keyPoints[imageIdx]);
     this.drawTemplateKeyPoints(this.keyPoints[imageIdx]);
   }
 
-  generateData() {
+  generateData(): void {
     const spinnerRef = this.spinnerService.start('Generating data...');
     this.fileService.generateDataFiles(this.imgData, this.keyPoints, this.zipFileName, this.imgDirectory)
       .then(() => {
@@ -181,52 +172,57 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
       });
   }
 
-  imagesLoadedAlready(): boolean {
-    return (this.imgData.length !== 0);
-  }
-
   missingData(): boolean {
     return (this.imgData.length === 0
-      || this.resizedImgHeight === undefined || this.resizedImgWidth === undefined
+      || this.resizedImgDimension.height === undefined || this.resizedImgDimension.width === undefined
       || this.imgDirectory === undefined || ArraysUtilsService.count2dElements(this.keyPoints) === 0
       || this.keyPoints.filter((keyPoints1d: []) =>
         keyPoints1d.filter((keyPoint: Keypoint) => (keyPoint.id === undefined || keyPoint.id === null)).length !== 0
       ).length !== 0);
   }
 
-  expandAndDrawImages(imageRowData: any, imageRowIdx: number) {
+  expandAndDrawImages(imageRowData: any, imageRowIdx: number): void {
     this.fileService.getDataUrl(imageRowIdx)
       .then((url: string) => {
-        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgWidth, this.visibleImgHeight);
+        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension);
         this.drawUserKeyPoints(this.keyPoints[imageRowIdx]);
       });
-    this.drawTemplate((this.templateContainer + imageRowIdx), this.templateConfig.width, this.templateConfig.height);
+    this.drawTemplate((this.templateContainer + imageRowIdx), this.templateImgDimension);
     this.drawTemplateKeyPoints(this.keyPoints[imageRowIdx]);
     this.setExpandedImage(imageRowData, imageRowIdx);
   }
 
-  private drawPicture(containerName: string, imageUrl: string, width: number, height: number) {
-    const widthFactor = width / this.resizedImgWidth;
-    const heightFactor = height / this.resizedImgHeight;
-    this.keyPointsPainter.drawPicture(containerName,
-                                      imageUrl,
-                                      width,
-                                      height,
-                                      widthFactor,
-                                      heightFactor,
-                                      (point) => this.addNewKeyPoint(point, this.expandedImageId));
+  protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void {
+    const scaleFactors: ScaleFactors = {
+      width: visibleImgDim.width / resizedImgDim.width, height: visibleImgDim.height / resizedImgDim.height
+    };
+
+    const stageData: KonvaStageData = {
+      containerName,
+      imageUrl,
+      imageDimension: visibleImgDim,
+      scaleFactors
+    };
+
+    this.keyPointsPainter.drawPicture(stageData, (point: MousePosition) => this.addNewKeyPoint(point, this.expandedImageId));
   }
 
-  private drawTemplate(containerName: string, width: number, height: number) {
+  private drawTemplate(containerName: string, imageDimension: ImageDimension): void {
     const templateUrl = PathsGeneratorService.getIdsTemplatePath();
-    this.keyPointsPainter.drawTemplate(containerName, templateUrl, width, height);
+    const stageData: KonvaStageData = {
+      containerName,
+      imageUrl: templateUrl,
+      imageDimension,
+      scaleFactors: null
+    };
+    this.keyPointsPainter.drawTemplate(stageData);
   }
 
-  private drawUserKeyPoints(keyPoints: Keypoint[]) {
+  private drawUserKeyPoints(keyPoints: Keypoint[]): void {
     this.keyPointsPainter.drawKeyPoints(keyPoints);
   }
 
-  private drawTemplateKeyPoints(keyPoints: Keypoint[]) {
+  private drawTemplateKeyPoints(keyPoints: Keypoint[]): void {
     this.keyPointsPainter.drawTemplateKeyPoints(keyPoints, (keyPointId) => {
       if (this.selectedKeyPoint) {
         this.selectedKeyPoint.id = keyPointId;
@@ -235,9 +231,8 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
     });
   }
 
-  changeSelection(keyPoint: Keypoint) {
+  changeSelection(keyPoint: Keypoint): void {
     if (this.selectedKeyPoint && this.selectedKeyPoint.id === undefined) {
-      // tslint:disable-next-line:max-line-length
       this.notifications.showError('Finish declaring keypoint', 'Before changing to other keypoint, pick this one spot on template picture.');
       return;
     }
@@ -248,21 +243,7 @@ export class KeyPointsDatasetCreatorComponent implements OnInit {
     }
   }
 
-  private resetSelection() {
+  protected resetSelection(): void {
     this.selectedKeyPoint = undefined;
-  }
-
-  private setExpandedImage(imageRowData: any, imageRowId: number) {
-    this.expandedImage = this.expandedImage === imageRowData ? null : imageRowData;
-    this.expandedImageId = this.expandedImageId === imageRowId ? null : imageRowId;
-  }
-
-  private resetExpanded() {
-    this.expandedImage = undefined;
-    this.expandedImageId = undefined;
-  }
-
-  navigateToInstruction() {
-      window.open(this.instructionUrl, '_blank');
   }
 }

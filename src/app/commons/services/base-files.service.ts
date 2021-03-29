@@ -1,10 +1,10 @@
 import {environment} from '../../../environments/environment';
 import {Injectable} from '@angular/core';
 
-import {ImageData} from '../models/image-data';
-import {ImgFile} from '../models/img-file';
-import {XmlFile} from '../models/xml-file';
-import {DatasetElement} from '../models/dataset-element';
+import {XmlImageData} from '../models/classes/xml-image-data';
+import {ImgFile} from '../models/classes/img-file';
+import {XmlFile} from '../models/classes/xml-file';
+import {DatasetElement} from '../models/classes/dataset-element';
 
 @Injectable()
 export abstract class BaseFilesService {
@@ -14,10 +14,10 @@ export abstract class BaseFilesService {
   protected validImageTypes = environment.validImageMimeTypes;
   protected statsFileHeader = environment.defaults.statsFileHeader;
 
-  protected abstract generateDataFiles(imgDatas: ImageData[], elements: DatasetElement[][],
+  protected abstract generateDataFiles(imgDatas: XmlImageData[], elements: DatasetElement[][],
                                        zipFileName: string, imgDirectoryName: string): Promise<any>;
-  protected abstract createXmlFiles(imgDatas: ImageData[], datasetElements: DatasetElement[][]): XmlFile[];
-  protected abstract createXmlFile(imgData: ImageData, datasetElements: DatasetElement[]): XmlFile;
+  protected abstract createXmlFiles(imgDatas: XmlImageData[], datasetElements: DatasetElement[][]): XmlFile[];
+  protected abstract createXmlFile(imgData: XmlImageData, datasetElements: DatasetElement[]): XmlFile;
 
   validFileTypes($event): boolean {
     const files = $event.target.files;
@@ -28,7 +28,7 @@ export abstract class BaseFilesService {
     return valid;
   }
 
-  uploadFiles($event) {
+  uploadFiles($event): void {
     if (this.imageFiles === undefined) {
       this.imageFiles = this.mergeFileLists((new DataTransfer()).files, $event.target.files);
     } else {
@@ -36,11 +36,11 @@ export abstract class BaseFilesService {
     }
   }
 
-  removeFile(fileIdx: number) {
+  removeFile(fileIdx: number): void {
     this.imageFiles = this.removeFromFileList(fileIdx, this.imageFiles);
   }
 
-  protected removeFromFileList(fileIdx: number, fileList: FileList) {
+  protected removeFromFileList(fileIdx: number, fileList: FileList): FileList {
     const df = new DataTransfer();
     for (let i = 0; i < fileList.length; i++) {
       if (i !== fileIdx) {
@@ -91,7 +91,7 @@ export abstract class BaseFilesService {
     return filenames;
   }
 
-  protected createImageFiles(imageDatas: ImageData[]): ImgFile[] {
+  protected createImageFiles(imageDatas: XmlImageData[]): ImgFile[] {
     const imageFiles = [];
     for (const imageData of imageDatas) {
       imageFiles.push(new ImgFile(imageData.filename, this.fromDataUrlToBlob(imageData.dataUrl)));
@@ -107,7 +107,6 @@ export abstract class BaseFilesService {
     for (let i = 0; i < byteString.length; i++) {
       ia[i] = byteString.charCodeAt(i);
     }
-    const bb = new Blob([ab]);
-    return bb;
+    return new Blob([ab]);
   }
 }

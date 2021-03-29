@@ -1,5 +1,10 @@
 import {Injectable} from '@angular/core';
 import Konva from 'konva';
+import {KonvaStageData} from '../models/interfaces/konva-stage-data';
+import {ImageDimension} from '../models/interfaces/image-dimension';
+import {ScaleFactors} from '../models/interfaces/scale-factors';
+import {NumbersUtilsService} from './utils/numbers-utils.service';
+import {MousePosition} from '../models/interfaces/mouse-position';
 
 @Injectable()
 export class KonvaService {
@@ -9,44 +14,44 @@ export class KonvaService {
   protected imageStage: Konva.Stage;
   protected resizeStage: Konva.Stage;
 
-  public getResizedDataUrl(containerName: string, imageUrl: string, width: number, height: number): Promise<string>{
+  public getResizedDataUrl(pictureData: KonvaStageData): Promise<string> {
     return new Promise(resolve => {
-      this.resizeStage = this.createStage(containerName, width, height);
+      this.resizeStage = this.createStage(pictureData.containerName, pictureData.imageDimension);
       const layer = this.createLayer(this.mainLayerConfig);
-      this.loadImage(imageUrl, width, height, (image: Konva.Image) => {
-        this.addElementsToLayer(layer, [image]);
+      this.loadImage(pictureData.imageUrl, pictureData.imageDimension, (image: Konva.Image) => {
+        this.addToLayer(layer, image);
+        this.addToStage(this.resizeStage, layer);
         layer.batchDraw();
-        this.addElementsToStage(this.resizeStage, [layer]);
         resolve(this.resizeStage.toDataURL({mimeType: 'image/jpeg', quality: 1}));
       });
     });
   }
 
-  protected loadImage(source, width, height, callback) {
+  protected loadImage(source: string, dimension: ImageDimension, callback): void {
     const image = new Image();
     image.onload = () => {
-      callback(this.createImage(image, width, height));
+      callback(this.createImage(image, dimension));
     };
     image.src = source;
   }
 
-  protected addElementsToStage(stage: Konva.Stage, elements: any[]) {
+  protected addElementsToStage(stage: Konva.Stage, elements: any[]): void {
     for (const element of elements) {
       this.addToStage(stage, element);
     }
   }
 
-  protected addToStage(stage: Konva.Stage, element: any) {
+  protected addToStage(stage: Konva.Stage, element: any): void  {
       stage.add(element);
   }
 
-  protected addElementsToLayer(layer: Konva.Layer, elements: any[]) {
+  protected addElementsToLayer(layer: Konva.Layer, elements: any[]): void {
     for (const element of elements) {
       this.addToLayer(layer, element);
     }
   }
 
-  protected addToLayer(layer: Konva.Layer, element: any) {
+  protected addToLayer(layer: Konva.Layer, element: any): void  {
     layer.add(element);
   }
 
@@ -57,7 +62,7 @@ export class KonvaService {
     }
   }
 
-  protected deleteFromLayer(layer: Konva.Layer, elementId: string) {
+  protected deleteFromLayer(layer: Konva.Layer, elementId: string): void {
     const element = this.findOneById(layer, elementId);
     if (element) {
       element.destroy();
@@ -73,46 +78,39 @@ export class KonvaService {
     return parentElement.findOne(typeName);
   }
 
-  protected showMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text, widthFactor: number, heightFactor: number) {
+  protected showMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text): void {
     const mousePosition = this.getMousePosition(stage);
     this.writeMessage(layer, text, 'x: ' + mousePosition.x + ', y: ' + mousePosition.y);
   }
 
-  protected showMappedMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text, widthFactor: number, heightFactor: number) {
+  protected showMappedMousePosition(stage: Konva.Stage, layer: Konva.Layer, text: Konva.Text, scaleFactors: ScaleFactors): void {
     let mousePosition = this.getMousePosition(stage);
-    mousePosition = this.mapMousePosition(mousePosition, widthFactor, heightFactor);
+    mousePosition = this.mapMousePosition(mousePosition, scaleFactors);
     this.writeMessage(layer, text, 'x: ' + mousePosition.x + ', y: ' + mousePosition.y);
   }
 
-  protected clearMousePosition(layer: Konva.Layer, text: Konva.Text) {
+  protected clearMousePosition(layer: Konva.Layer, text: Konva.Text): void {
     this.writeMessage(layer, text, '');
   }
 
-  protected getMousePosition(stage: Konva.Stage) {
+  protected getMousePosition(stage: Konva.Stage): MousePosition {
     const position = stage.getPointerPosition();
-    return {x: Math.round(position.x), y: Math.round(position.y)};
+    return {
+      x: NumbersUtilsService.round(position.x),
+      y: NumbersUtilsService.round(position.y),
+      scaleFactors: null
+    };
   }
 
-  protected mapMousePosition(mousePosition, widthFactor: number, heightFactor: number) {
-    if (widthFactor > 1) {
-      mousePosition.x = Math.round(mousePosition.x / widthFactor);
-    } else {
-      mousePosition.x = Math.round(mousePosition.x * widthFactor);
-    }
-
-    if (heightFactor > 1) {
-      mousePosition.y = Math.round(mousePosition.y / heightFactor);
-    } else {
-      mousePosition.y = Math.round(mousePosition.y * heightFactor);
-    }
-
-    mousePosition.widthFactor = widthFactor;
-    mousePosition.heightFactor = heightFactor;
+  protected mapMousePosition(mousePosition: MousePosition, scaleFactors: ScaleFactors): MousePosition {
+    mousePosition.x = NumbersUtilsService.round(NumbersUtilsService.backToOriginal(mousePosition.x, scaleFactors.width));
+    mousePosition.y = NumbersUtilsService.round(NumbersUtilsService.backToOriginal(mousePosition.y, scaleFactors.height));
+    mousePosition.scaleFactors = scaleFactors;
 
     return mousePosition;
   }
 
-  protected writeMessage(layer: Konva.Layer, text: Konva.Text, message: string) {
+  protected writeMessage(layer: Konva.Layer, text: Konva.Text, message: string): void {
     text.text(message);
     layer.draw();
   }
@@ -121,25 +119,25 @@ export class KonvaService {
     return (transformer.nodes().length !== 0);
   }
 
-  protected createStage(containerName: string, width: number, height: number): Konva.Stage {
+  protected createStage(containerName: string, dimension: ImageDimension): Konva.Stage {
     return new Konva.Stage({
       container: containerName,
-      width,
-      height,
+      width: dimension.width,
+      height: dimension.height,
     });
   }
 
-  protected createLayer(config) {
+  protected createLayer(config): Konva.Layer {
     return new Konva.Layer(config);
   }
 
-  protected createImage(imageObj: HTMLImageElement, width: number, height: number) {
+  protected createImage(imageObj: HTMLImageElement, dimension: ImageDimension): Konva.Image {
     return new Konva.Image({
       image: imageObj,
       x: 0,
       y: 0,
-      width,
-      height
+      width: dimension.width,
+      height: dimension.height
     });
   }
 

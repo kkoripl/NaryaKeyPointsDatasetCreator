@@ -3,9 +3,9 @@ import {Injectable} from '@angular/core';
 import {BaseFilesService} from '../../../commons/services/base-files.service';
 import {ZipFileCreatorService} from '../../../commons/services/zip-file-creator.service';
 import {TrackerXmlFileCreatorService} from './tracker-xml-file-creator.service';
-import {ImageData} from '../../../commons/models/image-data';
+import {XmlImageData} from '../../../commons/models/classes/xml-image-data';
 import {BoundingBox} from '../models/bounding-box';
-import {XmlFile} from '../../../commons/models/xml-file';
+import {XmlFile} from '../../../commons/models/classes/xml-file';
 
 @Injectable()
 export class TrackerFileService extends BaseFilesService {
@@ -17,7 +17,7 @@ export class TrackerFileService extends BaseFilesService {
     this.xmlCreator = xmlFileCreatorService;
   }
 
-  generateDataFiles(imgDatas: ImageData[], bboxes: BoundingBox[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
+  generateDataFiles(imgDatas: XmlImageData[], bboxes: BoundingBox[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
     return new Promise(resolve => {
       const xmlFiles = this.createXmlFiles(imgDatas, bboxes);
       const imgFiles = this.createImageFiles(imgDatas);
@@ -27,7 +27,7 @@ export class TrackerFileService extends BaseFilesService {
     });
   }
 
-  protected createXmlFiles(imgDatas: ImageData[], bboxes: BoundingBox[][]): XmlFile[] {
+  protected createXmlFiles(imgDatas: XmlImageData[], bboxes: BoundingBox[][]): XmlFile[] {
     const files = [];
     for (let i = 0; i < imgDatas.length ; i++) {
       files.push(this.createXmlFile(imgDatas[i], bboxes[i]));
@@ -35,11 +35,11 @@ export class TrackerFileService extends BaseFilesService {
     return files;
   }
 
-  protected createXmlFile(imgData: ImageData, bboxes: BoundingBox[]): XmlFile {
+  protected createXmlFile(imgData: XmlImageData, bboxes: BoundingBox[]): XmlFile {
     return this.xmlCreator.createXmlFile(imgData, bboxes);
   }
 
-  private createSetFileContent(imgDatas: ImageData[]): string {
+  private createSetFileContent(imgDatas: XmlImageData[]): string {
     return imgDatas.map(imgData => imgData.filename).join('\n');
   }
 }

@@ -8,7 +8,7 @@ import {Keypoint} from '../models/keypoint';
 export class KeypointsXmlFileCreatorService extends XmlFileBaseCreatorService {
   keyPointTags = environment.xmlTags.keyPoint;
 
-  protected createElement(xmlWriter: any, keyPointData: Keypoint) {
+  protected createElement(xmlWriter: any, keyPointData: Keypoint): void {
     xmlWriter
       .startElement(this.keyPointTags.object)
         .writeElement(this.keyPointTags.id, keyPointData.id)

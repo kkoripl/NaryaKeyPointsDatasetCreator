@@ -1,33 +1,26 @@
-import {DatasetElement} from '../../../commons/models/dataset-element';
+import {DatasetElement} from '../../../commons/models/classes/dataset-element';
+import {ScaleFactors} from '../../../commons/models/interfaces/scale-factors';
+import {NumbersUtilsService} from '../../../commons/services/utils/numbers-utils.service';
 
 export class Keypoint extends DatasetElement {
   id: number;
   x: number;
   y: number;
-  widthFactor: number;
+  scaleFactors: ScaleFactors;
   heightFactor: number;
 
   constructor(point) {
     super();
     this.x = point.x;
     this.y = point.y;
-    this.widthFactor = point.widthFactor;
-    this.heightFactor = point.heightFactor;
+    this.scaleFactors = point.scaleFactors;
   }
 
   getVisibleX(): number {
-    if (this.widthFactor > 1) {
-      return Math.round(this.x * this.widthFactor);
-    } else {
-      return Math.round(this.x / this.widthFactor);
-    }
+    return NumbersUtilsService.scale(this.x, this.scaleFactors.width);
   }
 
   getVisibleY(): number {
-    if (this.heightFactor > 1) {
-      return Math.round(this.y * this.heightFactor);
-    } else {
-      return Math.round(this.y / this.heightFactor);
-    }
+    return NumbersUtilsService.scale(this.y, this.scaleFactors.height);
   }
 }
