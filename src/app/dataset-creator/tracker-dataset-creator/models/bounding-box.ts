@@ -1,6 +1,7 @@
 import {DatasetElement} from '../../../commons/models/classes/dataset-element';
 import {NumbersUtilsService} from '../../../commons/services/utils/numbers-utils.service';
 import {ScaleFactors} from '../../../commons/models/interfaces/scale-factors';
+import {BoundingBoxLabel} from '../enums/bounding-box-label';
 
 export class BoundingBox extends DatasetElement {
   x: number;
@@ -8,7 +9,7 @@ export class BoundingBox extends DatasetElement {
   width: number;
   height: number;
   scaleFactors: ScaleFactors;
-  label: string;
+  label: string = BoundingBoxLabel.PLAYER;
 
   constructor(x: number, y: number, width: number, height: number, scaleFactors: ScaleFactors) {
     super();
