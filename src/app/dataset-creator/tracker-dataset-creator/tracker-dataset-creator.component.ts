@@ -40,7 +40,6 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   bboxDisplayedColumns: string[] = ['x', 'y', 'width', 'height', 'label', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   bboxesTableData: MatTableDataSource<any>[] = [];
-  imagesTableData = new MatTableDataSource;
 
   bboxes: BoundingBox[][] = [];
   selectedBbox: BoundingBox;

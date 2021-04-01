@@ -43,7 +43,6 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
   keyPointsDisplayedColumns: string[] = ['id', 'x', 'y', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   keyPointsTableData: MatTableDataSource<any>[] = [];
-  imagesTableData = new MatTableDataSource;
 
   keyPoints: Keypoint[][] = [];
   selectedKeyPoint: Keypoint;
