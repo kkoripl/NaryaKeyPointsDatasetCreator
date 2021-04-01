@@ -131,6 +131,10 @@ export const environment = {
         strokeWidth: 2,
         stroke: 'pink'
       },
+      bboxHelperLinesConfig: {
+        strokeWidth: 1,
+        stroke: 'pink'
+      },
       templateSelectedConfig: {
         id: -1,
         x: 0,

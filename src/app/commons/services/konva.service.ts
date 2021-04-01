@@ -62,12 +62,19 @@ export class KonvaService {
     }
   }
 
-  protected deleteFromLayer(layer: Konva.Layer, elementId: string): void {
-    const element = this.findOneById(layer, elementId);
+  protected deleteFromLayerById(layer: Konva.Layer, elementId: string): void {
+    this.deleteElementFromLayer(layer, this.findOneById(layer, elementId));
+  }
+
+  protected deleteElementFromLayer(layer: Konva.Layer, element: Konva.Node): void {
     if (element) {
       element.destroy();
     }
     layer.batchDraw();
+  }
+
+  protected existAtLeastOneOfTypeAt(layer: Konva.Layer, typeName: string): boolean {
+    return this.findOneByType(layer, typeName) !== undefined;
   }
 
   protected findOneById(parentElement: any, elementId: string) {
@@ -172,5 +179,10 @@ export class KonvaService {
 
     label.add(text);
     return label;
+  }
+
+  protected createLine(points: number[], config): Konva.Line {
+    config.points = points;
+    return new Konva.Line(config);
   }
 }
