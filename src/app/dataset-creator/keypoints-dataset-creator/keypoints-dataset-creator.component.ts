@@ -28,7 +28,7 @@ import {KeysUtilsService} from '../../commons/services/utils/keys-utils.service'
     trigger('detailExpand', [
       state('collapsed', style({height: '0px', minHeight: '0'})),
       state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+      transition('expanded <=> collapsed', animate('450ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ]
 })
@@ -188,14 +188,15 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
   }
 
   expandAndDrawImages(imageRowData: any, imageRowIdx: number): void {
-    this.fileService.getDataUrl(imageRowIdx)
-      .then((url: string) => {
+    this.setExpandedImage(imageRowData, imageRowIdx);
+    if (this.expandedImageId !== undefined) {
+      this.fileService.getDataUrl(imageRowIdx).then((url: string) => {
         this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension);
         this.drawUserKeyPoints(this.keyPoints[imageRowIdx]);
       });
-    this.drawTemplate((this.templateContainer + imageRowIdx), this.templateImgDimension);
-    this.drawTemplateKeyPoints(this.keyPoints[imageRowIdx]);
-    this.setExpandedImage(imageRowData, imageRowIdx);
+      this.drawTemplate((this.templateContainer + imageRowIdx), this.templateImgDimension);
+      this.drawTemplateKeyPoints(this.keyPoints[imageRowIdx]);
+    }
   }
 
   protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void {
@@ -235,6 +236,17 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
         this.drawTemplateKeyPoints(keyPoints);
       }
     });
+  }
+
+  animationDone($event) {
+    if ($event.toState === 'expanded' && this.expandedImageId !== undefined) {
+      this.scrollToExpanded();
+    }
+  }
+
+  protected scrollToExpanded(): void {
+    const expandedElement = document.getElementById(this.imageContainer + this.expandedImageId);
+    expandedElement.scrollIntoView(true);
   }
 
   changeSelection(keyPoint: Keypoint): void {

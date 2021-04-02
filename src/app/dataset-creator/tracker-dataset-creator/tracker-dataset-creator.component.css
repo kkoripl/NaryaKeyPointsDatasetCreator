@@ -6,9 +6,6 @@ div.main {
 .invisible{
   display: none;
 }
-.overflow {
-  overflow: hidden;
-}
 
 .spacer {
   flex: 1;
@@ -18,9 +15,8 @@ div.main {
   background: #d4dfff; /* green */
 }
 
-
-table.secondary {
-  width: 91%;
+.full-width{
+  width: 100%;
 }
 
 table.main {
@@ -55,4 +51,5 @@ tr.example-element-row:not(.example-expanded-row):active {
 .example-element-detail {
   overflow: hidden;
   display: flex;
+  flex-direction: row;
 }

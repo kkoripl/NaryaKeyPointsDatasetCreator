@@ -29,6 +29,7 @@ export abstract class DatasetCreatorComponent {
   abstract missingData(): boolean;
   abstract expandAndDrawImages(imageRowData: any, imageRowIdx: number): void;
   protected abstract drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void;
+  protected abstract scrollToExpanded(): void;
   abstract changeSelection(element: DatasetElement): void;
   protected abstract resetSelection(): void;
   protected abstract enlargeElementsArray(imagesCnt: number, elements: DatasetElement[][]): void;
@@ -49,8 +50,8 @@ export abstract class DatasetCreatorComponent {
   }
 
   protected setExpandedImage(imageRowData: any, imageRowId: number): void {
-    this.expandedImage = this.expandedImage === imageRowData ? null : imageRowData;
-    this.expandedImageId = this.expandedImageId === imageRowId ? null : imageRowId;
+    this.expandedImage = this.expandedImage === imageRowData ? undefined : imageRowData;
+    this.expandedImageId = this.expandedImageId === imageRowId ? undefined : imageRowId;
   }
 
   protected expandNextImage(): void {
@@ -76,6 +77,12 @@ export abstract class DatasetCreatorComponent {
       this.resetExpanded();
     } else {
       this.expandAndDrawImages(this.imagesTableData.data[previousExpandedImageId], previousExpandedImageId);
+    }
+  }
+
+  animationDone($event) {
+    if ($event.toState === 'expanded' && this.expandedImageId !== undefined) {
+      this.scrollToExpanded();
     }
   }
 

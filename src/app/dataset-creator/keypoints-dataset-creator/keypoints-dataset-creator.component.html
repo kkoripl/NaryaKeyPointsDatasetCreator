@@ -39,42 +39,43 @@
     <ng-container matColumnDef="expandedDetail">
       <td mat-cell *matCellDef="let image; let rowNum = dataIndex;" [attr.colspan]="2">
         <div class="example-element-detail"
-             [@detailExpand]="image == expandedImage ? 'expanded' : 'collapsed'">
-          <div style="width: 100%">
-            <div style="float:left">
+             [@detailExpand]="image == expandedImage ? 'expanded' : 'collapsed'"
+             (@detailExpand.done)="animationDone($event)">
+            <div>
               <div id="{{imageContainer + rowNum}}"></div>
             </div>
-            <div class="overflow">
-              <div id="{{templateContainer + rowNum}}"></div>
-            </div>
-            <div class="overflow">
-              <table class="secondary "mat-table [dataSource]="getKeyPointData(rowNum)">
-                <ng-container matColumnDef="id">
-                  <th mat-header-cell *matHeaderCellDef>Id</th>
-                  <td mat-cell *matCellDef="let keypoint">{{keypoint.id}}</td>
-                </ng-container>
-                <ng-container matColumnDef="x">
-                  <th mat-header-cell *matHeaderCellDef>X</th>
-                  <td mat-cell *matCellDef="let keypoint">{{keypoint.x}}</td>
-                </ng-container>
-                <ng-container matColumnDef="y">
-                  <th mat-header-cell *matHeaderCellDef>Y</th>
-                  <td mat-cell *matCellDef="let keypoint">{{keypoint.y}}</td>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Actions</th>
-                  <td mat-cell *matCellDef="let keypoint">
-                    <button mat-icon-button (click)="deleteKeypoint(keypoint, rowNum)" matTooltip="Delete keypoint" color="warn">
-                      <mat-icon aria-label="Delete">delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
+            <div class="column-wise" id="{{'div'+rowNum}}">
+              <div>
+                <div id="{{templateContainer + rowNum}}"></div>
+              </div>
+              <div>
+                <table class="full-width" mat-table [dataSource]="getKeyPointData(rowNum)">
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>Id</th>
+                    <td mat-cell *matCellDef="let keypoint">{{keypoint.id}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="x">
+                    <th mat-header-cell *matHeaderCellDef>X</th>
+                    <td mat-cell *matCellDef="let keypoint">{{keypoint.x}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="y">
+                    <th mat-header-cell *matHeaderCellDef>Y</th>
+                    <td mat-cell *matCellDef="let keypoint">{{keypoint.y}}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>Actions</th>
+                    <td mat-cell *matCellDef="let keypoint">
+                      <button mat-icon-button (click)="deleteKeypoint(keypoint, rowNum)" matTooltip="Delete keypoint" color="warn">
+                        <mat-icon aria-label="Delete">delete</mat-icon>
+                      </button>
+                    </td>
+                  </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="keyPointsDisplayedColumns"></tr>
-                <tr mat-row *matRowDef="let keypoint; columns: keyPointsDisplayedColumns;" [ngClass]="{'highlight': selectedKeyPoint == keypoint}" (click)="changeSelection(keypoint)"></tr>
-              </table>
+                  <tr mat-header-row *matHeaderRowDef="keyPointsDisplayedColumns"></tr>
+                  <tr mat-row *matRowDef="let keypoint; columns: keyPointsDisplayedColumns;" [ngClass]="{'highlight': selectedKeyPoint == keypoint}" (click)="changeSelection(keypoint)"></tr>
+                </table>
+              </div>
             </div>
-          </div>
         </div>
       </td>
     </ng-container>
@@ -85,7 +86,7 @@
         [class.example-expanded-row]="expandedImage === image"
         (click)="expandAndDrawImages(image, rowNum)">
     </tr>
-    <tr mat-row *matRowDef="let image; columns: ['expandedDetail']" class="example-detail-row"></tr>
+    <tr mat-row *matRowDef="let image; columns: ['expandedDetail']" class="example-detail-row" ></tr>
   </table>
 </div>
 <div id="{{resizeContainer}}" class="invisible"></div>

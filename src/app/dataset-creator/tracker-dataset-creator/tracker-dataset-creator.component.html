@@ -39,13 +39,13 @@
     <ng-container matColumnDef="expandedDetail">
       <td mat-cell *matCellDef="let image; let rowNum = dataIndex;" [attr.colspan]="2">
         <div class="example-element-detail"
-             [@detailExpand]="image == expandedImage ? 'expanded' : 'collapsed'">
-          <div style="width: 100%">
-            <div style="float:left">
+             [@detailExpand]="image == expandedImage ? 'expanded' : 'collapsed'"
+             (@detailExpand.done) = "animationDone($event)">
+            <div>
               <div id="{{imageContainer + rowNum}}"></div>
             </div>
-            <div class="overflow">
-              <table class="secondary" mat-table [dataSource]="getBboxData(rowNum)">
+            <div class="spacer">
+              <table class="full-width" mat-table [dataSource]="getBboxData(rowNum)">
                 <ng-container matColumnDef="x">
                   <th mat-header-cell *matHeaderCellDef>X</th>
                   <td mat-cell *matCellDef="let bbox">{{bbox.x}}</td>
@@ -85,7 +85,6 @@
                 <tr mat-row *matRowDef="let bbox; columns: bboxDisplayedColumns;" [ngClass]="{'highlight': selectedBbox == bbox}" (click)="changeSelection(bbox)"></tr>
               </table>
             </div>
-          </div>
         </div>
       </td>
     </ng-container>

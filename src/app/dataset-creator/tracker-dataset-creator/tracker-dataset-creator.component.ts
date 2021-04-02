@@ -25,7 +25,7 @@ import {KeysUtilsService} from '../../commons/services/utils/keys-utils.service'
     trigger('detailExpand', [
       state('collapsed', style({height: '0px', minHeight: '0'})),
       state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('300ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+      transition('expanded <=> collapsed', animate('450ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ]
 })
@@ -198,6 +198,7 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
         this.drawUserBboxes(this.bboxes[imageRowIdx]);
       });
     this.setExpandedImage(imageRowData, imageRowIdx);
+    this.scrollToExpanded();
   }
 
   protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void {
@@ -215,9 +216,13 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     this.bboxPainter.drawPicture(stageData, (bbox: BoundingBox) => this.addNewBbox(bbox, this.expandedImageId));
   }
 
-
   private drawUserBboxes(bboxes: BoundingBox[]): void {
     this.bboxPainter.drawBoundingBoxes(bboxes);
+  }
+
+  protected scrollToExpanded(): void {
+    const expandedElement = document.getElementById(this.imageContainer + this.expandedImageId);
+    expandedElement.scrollIntoView();
   }
 
   changeSelection(bbox: BoundingBox): void {
