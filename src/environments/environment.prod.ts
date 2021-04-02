@@ -22,7 +22,6 @@ export const environment = {
 
   validImageMimeTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/bmp'],
 
-
   xmlTags: {
     mainTag: 'annotation',
     keyPoint: {
@@ -125,6 +124,10 @@ export const environment = {
         width: 0,
         height: 0,
         strokeWidth: 2,
+        stroke: 'pink'
+      },
+      bboxHelperLinesConfig: {
+        strokeWidth: 1,
         stroke: 'pink'
       },
       templateSelectedConfig: {

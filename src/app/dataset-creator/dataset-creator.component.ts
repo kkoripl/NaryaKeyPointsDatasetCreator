@@ -4,7 +4,6 @@ import {MatTableDataSource} from '@angular/material/table';
 import {XmlImageData} from '../commons/models/classes/xml-image-data';
 import {ImageDimension} from '../commons/models/interfaces/image-dimension';
 import {DatasetElement} from '../commons/models/classes/dataset-element';
-import {HostListener} from '@angular/core';
 
 export abstract class DatasetCreatorComponent {
   resizedImgDimension: ImageDimension = {width: environment.defaults.resizedImgWidth, height: environment.defaults.resizedImgHeight};
@@ -21,12 +20,6 @@ export abstract class DatasetCreatorComponent {
   resizeContainer = environment.containers.resize;
 
   instructionUrl = environment.instructionUrl;
-
-  @HostListener('document:keypress', ['$event']) keyboardEventsHandler($event: KeyboardEvent): void {
-    const key = $event.key;
-    if (key === 's') { this.expandNextImage(); }
-    if (key === 'w') { this.expandPreviousImage(); }
-  }
 
   abstract validateAndUpload($event): void;
   protected abstract uploadImages($event): void;
@@ -56,7 +49,6 @@ export abstract class DatasetCreatorComponent {
   }
 
   protected setExpandedImage(imageRowData: any, imageRowId: number): void {
-    console.log(imageRowData);
     this.expandedImage = this.expandedImage === imageRowData ? null : imageRowData;
     this.expandedImageId = this.expandedImageId === imageRowId ? null : imageRowId;
   }

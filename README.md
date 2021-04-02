@@ -10,6 +10,7 @@ Project is available at [Github Pages](https://kkoripl.github.io/NaryaKeyPointsD
 
 **Page is not tested for unlimited number of pictures! It works well on about 100-120 images at once for data generation. Keep that in mind if generating process would last for some time.**
 
+**Creator is not working on Safari!**
 
 **BOTH CREATORS**
 - Setup final dimension of images - dimension, which would you use to train model on. Max: 512x512
@@ -30,15 +31,17 @@ Project is available at [Github Pages](https://kkoripl.github.io/NaryaKeyPointsD
   - Pick one of 29 points on the template below, to add key point it's id.
   - To change wrong id, finish adding next key point and then change selection of the key point row, then pick another point on the template.
   - Do same steps for each of your pictures!
+  - Tip: You can go straight to the next picture by pushing button 'S' on your keyboard - for the previous one - push 'W'.
   
 **STEPS FOR TRACKER CREATOR**
 - Pick one of images, extend its row and start adding bounding boxes:
   - Click particular point on your picture. It would be starting point for your bounding box.
   - With right mouse button still holden, start moving your mouse to adjust size of your bounding box.
   - To finish adjusting size, release holden button - on your bounding box would appear 9 points of a transformer. Use them to make final modifications to bounding box.
-  - When you would be satisfied with created box, click wherever on the image to close transformer and finish creation process.
-  - In bounding boxes data table on the right-hand side add label to just created box.
+  - When you would be satisfied with created box, click wherever on the image (or push button 'A' on a keyboard) to close transformer and finish creation process.
+  - In bounding boxes data table on the right-hand side, automatically box would be labeled as player, if you would like to change it, click on this column.
   - Do same steps for each of your pictures!
+  - Tip: You can go straight to the next picture by pushing button 'S' on your keyboard - for the previous one - push 'W'.
   - (If you would be unsatisfied with your bounding box after closing transformer, you need to delete it using button in data table and create new bounding box).
   
 

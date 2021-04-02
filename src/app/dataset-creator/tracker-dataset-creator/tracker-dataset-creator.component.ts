@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {MatTableDataSource} from '@angular/material/table';
 
@@ -43,6 +43,15 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
 
   bboxes: BoundingBox[][] = [];
   selectedBbox: BoundingBox;
+
+  @HostListener('document:keypress', ['$event']) keyboardEventsHandler($event: KeyboardEvent): void {
+    const key = $event.key;
+    if (key === 's') { this.expandNextImage(); }
+    if (key === 'w') { this.expandPreviousImage(); }
+    if (key === 'a') {
+      this.finishAddingBbox();
+    }
+  }
 
   constructor(fileService: TrackerFileService,
               bboxPainter: TrackerBboxPainterService,
@@ -146,6 +155,14 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
       MatTableUtilsService.setData(this.bboxes[imageIdx], this.bboxesTableData[imageIdx]);
       this.selectedBbox = bbox;
       this.drawUserBboxes(this.bboxes[imageIdx]);
+    }
+  }
+
+  private finishAddingBbox(){
+    if (this.bboxPainter.getSelectionLayer()) {
+      this.bboxPainter.finishCreatingBbox(this.bboxPainter.getSelectionLayer(),
+                                          this.bboxPainter.getScaleFactors(),
+                            (bbox: BoundingBox) => {if (bbox) {this.addNewBbox(bbox, this.expandedImageId); }});
     }
   }
 

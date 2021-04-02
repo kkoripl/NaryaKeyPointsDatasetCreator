@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {environment} from '../../../environments/environment';
 import {MatTableDataSource} from '@angular/material/table';
@@ -46,6 +46,12 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
 
   keyPoints: Keypoint[][] = [];
   selectedKeyPoint: Keypoint;
+
+  @HostListener('document:keypress', ['$event']) keyboardEventsHandler($event: KeyboardEvent): void {
+    const key = $event.key;
+    if (key === 's') { this.expandNextImage(); }
+    if (key === 'w') { this.expandPreviousImage(); }
+  }
 
   constructor(fileUploaderService: KeypointsFileService,
               keyPointsPainter: KeypointsPainterService,
