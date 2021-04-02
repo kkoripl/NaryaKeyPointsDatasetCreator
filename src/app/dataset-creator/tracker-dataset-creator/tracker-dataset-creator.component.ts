@@ -15,6 +15,7 @@ import {DatasetCreatorComponent} from '../dataset-creator.component';
 import {ScaleFactors} from '../../commons/models/interfaces/scale-factors';
 import {KonvaStageData} from '../../commons/models/interfaces/konva-stage-data';
 import {MatTableUtilsService} from '../../commons/services/utils/mat-table-utils.service';
+import {KeysUtilsService} from '../../commons/services/utils/keys-utils.service';
 
 @Component({
   selector: 'app-tracker-dataset-creator',
@@ -46,11 +47,9 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
 
   @HostListener('document:keypress', ['$event']) keyboardEventsHandler($event: KeyboardEvent): void {
     const key = $event.key;
-    if (key === 's') { this.expandNextImage(); }
-    if (key === 'w') { this.expandPreviousImage(); }
-    if (key === 'a') {
-      this.finishAddingBbox();
-    }
+    if (KeysUtilsService.is(key, 's')) { this.expandNextImage(); }
+    if (KeysUtilsService.is(key, 'w')) { this.expandPreviousImage(); }
+    if (KeysUtilsService.is(key, 'a')) { this.finishAddingBbox(); }
   }
 
   constructor(fileService: TrackerFileService,

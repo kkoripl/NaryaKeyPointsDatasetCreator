@@ -17,6 +17,7 @@ import {KonvaStageData} from '../../commons/models/interfaces/konva-stage-data';
 import {DatasetCreatorComponent} from '../dataset-creator.component';
 import {MousePosition} from '../../commons/models/interfaces/mouse-position';
 import {MatTableUtilsService} from '../../commons/services/utils/mat-table-utils.service';
+import {KeysUtilsService} from '../../commons/services/utils/keys-utils.service';
 
 
 @Component({
@@ -49,8 +50,8 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
 
   @HostListener('document:keypress', ['$event']) keyboardEventsHandler($event: KeyboardEvent): void {
     const key = $event.key;
-    if (key === 's') { this.expandNextImage(); }
-    if (key === 'w') { this.expandPreviousImage(); }
+    if (KeysUtilsService.is(key, 's')) { this.expandNextImage(); }
+    if (KeysUtilsService.is(key, 'w')) { this.expandPreviousImage(); }
   }
 
   constructor(fileUploaderService: KeypointsFileService,

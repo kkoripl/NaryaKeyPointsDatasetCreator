@@ -54,7 +54,7 @@ export abstract class DatasetCreatorComponent {
   }
 
   protected expandNextImage(): void {
-    if (this.imagesTableData.data === undefined) { return; }
+    if (this.imagesTableData.data === undefined || this.imagesTableData.data.length === 0) { return; }
     if (this.expandedImageId === undefined) {
       this.expandAndDrawImages(this.imagesTableData.data[0], 0);
     }
@@ -70,7 +70,7 @@ export abstract class DatasetCreatorComponent {
   }
 
   protected expandPreviousImage(): void {
-    if (this.expandedImageId === undefined || this.imagesTableData.data === undefined) { return; }
+    if (this.expandedImageId === undefined || this.imagesTableData.data === undefined || this.imagesTableData.data.length === 0) { return; }
     const previousExpandedImageId = this.expandedImageId - 1;
     if (previousExpandedImageId < 0) {
       this.resetExpanded();

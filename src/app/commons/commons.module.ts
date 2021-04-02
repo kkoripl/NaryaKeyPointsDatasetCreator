@@ -13,6 +13,7 @@ import {FilterSelectedPipe} from './pipes/filter-selected.pipe';
 import {ArraysUtilsService} from './services/utils/arrays-utils.service';
 import {ZipFileCreatorService} from './services/zip-file-creator.service';
 import {MatTableUtilsService} from './services/utils/mat-table-utils.service';
+import {KeysUtilsService} from './services/utils/keys-utils.service';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import {MatTableUtilsService} from './services/utils/mat-table-utils.service';
     ZipFileCreatorService,
     NumbersUtilsService,
     ArraysUtilsService,
-    MatTableUtilsService
+    MatTableUtilsService,
+    KeysUtilsService
   ]
 })
 export class CommonsModule { }
