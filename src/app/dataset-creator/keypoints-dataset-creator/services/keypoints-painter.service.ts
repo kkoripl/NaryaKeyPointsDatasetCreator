@@ -6,6 +6,7 @@ import {Keypoint} from '../models/keypoint';
 import {KonvaService} from '../../../commons/services/konva.service';
 import {KonvaStageData} from '../../../commons/models/interfaces/konva-stage-data';
 import {KeypointDataTaker} from '../callbacks/keypoint-data-taker';
+import {KonvaEvent} from '../../../commons/models/enums/konva-event';
 
 @Injectable()
 export class KeypointsPainterService extends KonvaService {
@@ -35,9 +36,9 @@ export class KeypointsPainterService extends KonvaService {
     const text = this.createText(this.coordsTextConfig);
     const label = this.createLabel(text, this.coordslabelConfig);
     this.loadImage(imageData.imageUrl, imageData.imageDimension, (image: Konva.Image) => {
-      image.on('mousemove', () => this.showMappedMousePosition(this.imageStage, mainLayer, text, imageData.scaleFactors));
-      image.on('mouseout', () => this.clearMousePosition(mainLayer, text));
-      image.on('click', () => clickCallback(this.mapMousePosition(this.getMousePosition(this.imageStage), imageData.scaleFactors)));
+      image.on(KonvaEvent.MOUSE_MOVE, () => this.showMappedMousePosition(this.imageStage, mainLayer, text, imageData.scaleFactors));
+      image.on(KonvaEvent.MOUSE_OUT, () => this.clearMousePosition(mainLayer, text));
+      image.on(KonvaEvent.CLICK, () => clickCallback(this.mapMousePosition(this.getMousePosition(this.imageStage), imageData.scaleFactors)));
       this.addElementsToLayer(mainLayer, [image, label]);
       mainLayer.batchDraw();
     });
@@ -114,14 +115,14 @@ export class KeypointsPainterService extends KonvaService {
 
   private createTextReturningValueOnClick(config, callback): Konva.Text {
     const text = this.createText(config);
-    text.on('click', () => callback(+text.getAttr('text')));
+    text.on(KonvaEvent.CLICK, () => callback(+text.getAttr('text')));
     return text;
   }
 
 
   private createCircleReturningIdOnClick(config, callback): Konva.Circle {
     const circle = this.createCircle(config);
-    circle.on('click', () => callback(+circle.getAttr('id')));
+    circle.on(KonvaEvent.CLICK, () => callback(+circle.getAttr('id')));
     return circle;
   }
 

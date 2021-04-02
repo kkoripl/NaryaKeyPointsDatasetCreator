@@ -45,22 +45,21 @@ export class TrackerBboxPainterService extends KonvaService {
 
     const text = this.createText(this.coordsTextConfig);
     const label = this.createLabel(text, this.coordslabelConfig);
-    const horizontalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
-    const verticalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
+    const helperHorizontalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
+    const helperVerticalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
 
     this.loadImage(stageData.imageUrl, stageData.imageDimension, (image: Konva.Image) => {
       // updating position of a mouse and drawing helper lines on image
       image.on(KonvaEvent.MOUSE_MOVE, () => {
         if (!this.existAtLeastOneOfTypeAt(this.selectionLayer, KonvaShapeType.TRANSFORMER)) {
-          this.updateHorizontalLinePosition(horizontalLine, this.getMousePosition(this.imageStage), this.imageStage.width());
-          this.updateVerticalLinePosition(verticalLine, this.getMousePosition(this.imageStage), this.imageStage.height());
+          this.updateHelperLinesPositions(helperHorizontalLine, helperVerticalLine);
         }
         this.showMappedMousePosition(this.imageStage, this.mainLayer, text, this.scaleFactors);
       });
 
       // removing position of a mouse and helper lines from image
       image.on(KonvaEvent.MOUSE_OUT, () => {
-        this.hideLines([verticalLine, horizontalLine]);
+        this.hideHelperLines([helperVerticalLine, helperHorizontalLine]);
         this.clearMousePosition(this.mainLayer, text);
       });
       const bboxSelectionRect = this.setupCreatingBoundingBoxOnImage(image, this.selectionLayer, this.userBboxConfig,
@@ -68,10 +67,10 @@ export class TrackerBboxPainterService extends KonvaService {
 
       // all shapes above image need to be 'transient' and let events fired on them being transported to image itself
       bboxSelectionRect.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-      horizontalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-      verticalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
+      helperHorizontalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
+      helperVerticalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
 
-      this.addElementsToLayer(this.mainLayer, [image, verticalLine, horizontalLine, label]);
+      this.addElementsToLayer(this.mainLayer, [image, helperVerticalLine, helperHorizontalLine, label]);
       this.addToLayer(this.selectionLayer, bboxSelectionRect);
       this.mainLayer.batchDraw();
       this.selectionLayer.batchDraw();
@@ -228,6 +227,11 @@ export class TrackerBboxPainterService extends KonvaService {
     this.deleteFromLayerById(layer, this.visibleBboxName);
   }
 
+  private updateHelperLinesPositions(horizontalLine: Konva.Line, verticalLine: Konva.Line): void {
+    this.updateHorizontalLinePosition(horizontalLine, this.getMousePosition(this.imageStage), this.imageStage.width());
+    this.updateVerticalLinePosition(verticalLine, this.getMousePosition(this.imageStage), this.imageStage.height());
+  }
+
   private updateHorizontalLinePosition(line: Konva.Line, mousePosition: MousePosition, endX: number): void {
     line.points([0, mousePosition.y, mousePosition.x, mousePosition.y, endX, mousePosition.y]);
     line.visible(true);
@@ -238,7 +242,7 @@ export class TrackerBboxPainterService extends KonvaService {
     line.visible(true);
   }
 
-  private hideLines(lines: Konva.Line[]): void {
+  private hideHelperLines(lines: Konva.Line[]): void {
     lines.forEach((line: Konva.Line) => line.visible(false));
   }
 
