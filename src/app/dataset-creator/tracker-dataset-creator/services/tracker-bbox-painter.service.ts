@@ -37,45 +37,54 @@ export class TrackerBboxPainterService extends KonvaService {
     super();
   }
 
-  drawPicture(stageData: KonvaStageData, bboxDataCallback: BoundingBoxDataTaker): void {
-    this.imageStage = this.createStage(stageData.containerName, stageData.imageDimension);
-    this.mainLayer = this.createLayer(this.mainLayerConfig);
-    this.selectionLayer = this.createLayer(this.selectionLayerConfig);
-    this.scaleFactors = stageData.scaleFactors;
+  drawPicture(stageData: KonvaStageData, bboxDataCallback: BoundingBoxDataTaker): Promise<any> {
+    return new Promise(resolve => {
+      if (this.imageStage) {
+        this.imageStage.destroyChildren();
+        this.imageStage.destroy();
+      }
 
-    const text = this.createText(this.coordsTextConfig);
-    const label = this.createLabel(text, this.coordslabelConfig);
-    const helperHorizontalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
-    const helperVerticalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
+      this.imageStage = this.createStage(stageData.containerName, stageData.imageDimension);
+      this.mainLayer = this.createLayer(this.mainLayerConfig);
+      this.selectionLayer = this.createLayer(this.selectionLayerConfig);
+      this.scaleFactors = stageData.scaleFactors;
 
-    this.loadImage(stageData.imageUrl, stageData.imageDimension, (image: Konva.Image) => {
-      // updating position of a mouse and drawing helper lines on image
-      image.on(KonvaEvent.MOUSE_MOVE, () => {
-        if (!this.existAtLeastOneOfTypeAt(this.selectionLayer, KonvaShapeType.TRANSFORMER)) {
-          this.updateHelperLinesPositions(helperHorizontalLine, helperVerticalLine);
-        }
-        this.showMappedMousePosition(this.imageStage, this.mainLayer, text, this.scaleFactors);
+      const text = this.createText(this.coordsTextConfig);
+      const label = this.createLabel(text, this.coordslabelConfig);
+      const helperHorizontalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
+      const helperVerticalLine = this.createLine([0, 0, 0, 0], this.bboxHelperLinesConfig);
+
+      this.loadImage(stageData.imageUrl, stageData.imageDimension, (image: Konva.Image) => {
+        // updating position of a mouse and drawing helper lines on image
+        image.on(KonvaEvent.MOUSE_MOVE, () => {
+          if (!this.existAtLeastOneOfTypeAt(this.selectionLayer, KonvaShapeType.TRANSFORMER)) {
+            this.updateHelperLinesPositions(helperHorizontalLine, helperVerticalLine);
+          }
+          this.showMappedMousePosition(this.imageStage, this.mainLayer, text, this.scaleFactors);
+        });
+
+        // removing position of a mouse and helper lines from image
+        image.on(KonvaEvent.MOUSE_OUT, () => {
+          this.hideHelperLines([helperVerticalLine, helperHorizontalLine]);
+          this.clearMousePosition(this.mainLayer, text);
+        });
+        const bboxSelectionRect = this.setupCreatingBoundingBoxOnImage(image, this.selectionLayer, this.userBboxConfig,
+          stageData.scaleFactors, bboxDataCallback);
+
+        // all shapes above image need to be 'transient' and let events fired on them being transported to image itself
+        bboxSelectionRect.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
+        helperHorizontalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
+        helperVerticalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
+
+        this.addElementsToLayer(this.mainLayer, [image, helperVerticalLine, helperHorizontalLine, label]);
+        this.addToLayer(this.selectionLayer, bboxSelectionRect);
+        this.mainLayer.batchDraw();
+        this.selectionLayer.batchDraw();
+        this.addElementsToStage(this.imageStage, [this.mainLayer, this.selectionLayer]);
+        resolve();
       });
-
-      // removing position of a mouse and helper lines from image
-      image.on(KonvaEvent.MOUSE_OUT, () => {
-        this.hideHelperLines([helperVerticalLine, helperHorizontalLine]);
-        this.clearMousePosition(this.mainLayer, text);
-      });
-      const bboxSelectionRect = this.setupCreatingBoundingBoxOnImage(image, this.selectionLayer, this.userBboxConfig,
-                                                                      stageData.scaleFactors, bboxDataCallback);
-
-      // all shapes above image need to be 'transient' and let events fired on them being transported to image itself
-      bboxSelectionRect.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-      helperHorizontalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-      helperVerticalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-
-      this.addElementsToLayer(this.mainLayer, [image, helperVerticalLine, helperHorizontalLine, label]);
-      this.addToLayer(this.selectionLayer, bboxSelectionRect);
-      this.mainLayer.batchDraw();
-      this.selectionLayer.batchDraw();
     });
-    this.addElementsToStage(this.imageStage, [this.mainLayer, this.selectionLayer]);
+
   }
 
   drawBoundingBoxes(bboxes: BoundingBox[]): void {

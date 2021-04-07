@@ -49,7 +49,8 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     const key = $event.key;
     if (KeysUtilsService.is(key, 's')) { this.expandNextImage(); }
     if (KeysUtilsService.is(key, 'w')) { this.expandPreviousImage(); }
-    if (KeysUtilsService.is(key, 'a')) { this.finishAddingBbox(); }
+    if (KeysUtilsService.is(key, 'a') && this.expandedImageId !== undefined) {
+      this.finishAddingBbox(); }
   }
 
   constructor(fileService: TrackerFileService,
@@ -194,14 +195,16 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   expandAndDrawImages(imageRowData: any, imageRowIdx: number): void {
     this.fileService.getDataUrl(imageRowIdx)
       .then((url: string) => {
-        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension);
-        this.drawUserBboxes(this.bboxes[imageRowIdx]);
+        this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension)
+          .then(() => {
+            this.drawUserBboxes(this.bboxes[imageRowIdx]);
+            this.scrollToExpanded();
+          });
       });
     this.setExpandedImage(imageRowData, imageRowIdx);
-    this.scrollToExpanded();
   }
 
-  protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void {
+  protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): Promise<any> {
     const scaleFactors: ScaleFactors = {
       width: visibleImgDim.width / resizedImgDim.width, height: visibleImgDim.height / resizedImgDim.height
     };
@@ -213,7 +216,10 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
       scaleFactors
     };
 
-    this.bboxPainter.drawPicture(stageData, (bbox: BoundingBox) => this.addNewBbox(bbox, this.expandedImageId));
+    return new Promise((resolve => {
+      this.bboxPainter.drawPicture(stageData, (bbox: BoundingBox) => this.addNewBboxAndDrawIt(bbox, this.expandedImageId))
+        .then(() => resolve());
+    }));
   }
 
   private drawUserBboxes(bboxes: BoundingBox[]): void {
