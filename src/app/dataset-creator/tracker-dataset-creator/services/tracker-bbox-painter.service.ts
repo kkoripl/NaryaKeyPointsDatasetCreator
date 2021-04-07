@@ -92,7 +92,10 @@ export class TrackerBboxPainterService extends KonvaService {
     const mainImage: Konva.Image = this.findOneByType(this.mainLayer, KonvaShapeType.IMAGE);
     const selectionRect: Konva.Rect = this.findOneById(this.selectionLayer, this.selectionBboxName);
 
-    if (this.bboxesLayer) { this.bboxesLayer.destroy(); }
+    if (this.bboxesLayer) {
+      this.bboxesLayer.destroyChildren();
+      this.bboxesLayer.destroy();
+    }
     this.bboxesLayer = this.createLayer(this.bboxLayerConfig);
 
     bboxes.forEach((bbox: BoundingBox) => {

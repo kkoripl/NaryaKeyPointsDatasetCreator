@@ -33,7 +33,7 @@ export abstract class DatasetCreatorComponent {
   abstract changeSelection(element: DatasetElement): void;
   protected abstract resetSelection(): void;
   protected abstract enlargeElementsArray(imagesCnt: number, elements: DatasetElement[][]): void;
-  protected abstract enlargeElementsTableData(imagesNames: string[], elementsTableSource: MatTableDataSource<any>[]): void;
+  protected abstract enlargeElementsTableData(newImages: number, elementsTableSource: MatTableDataSource<any>[]): void;
   protected abstract async enlargeImageData(imagesNames: string[]);
 
   protected enlargeImageTableData(imagesNames: string[], imageTableData: MatTableDataSource<any>): void {

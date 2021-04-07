@@ -23,6 +23,8 @@ import {MatSelectModule} from '@angular/material/select';
 import {KeypointsFileService} from './keypoints-dataset-creator/services/keypoints-file-service';
 import {TrackerFileService} from './tracker-dataset-creator/services/tracker-file.service';
 import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/tracker-xml-file-creator.service';
+import {TrainedModelService} from './tracker-dataset-creator/services/trained-model-service';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,8 @@ import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/t
         MatTooltipModule,
         MatIconModule,
         FormsModule,
-        MatSelectModule
+        MatSelectModule,
+        HttpClientModule
     ],
   providers: [
     KeypointsPainterService,
@@ -52,7 +55,8 @@ import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/t
     KeypointsXmlFileCreatorService,
     TrackerBboxPainterService,
     TrackerXmlFileCreatorService,
-    TrackerFileService
+    TrackerFileService,
+    TrainedModelService
   ],
   bootstrap: []
 })

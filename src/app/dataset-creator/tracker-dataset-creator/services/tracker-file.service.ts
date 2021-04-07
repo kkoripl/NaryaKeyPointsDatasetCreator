@@ -17,6 +17,10 @@ export class TrackerFileService extends BaseFilesService {
     this.xmlCreator = xmlFileCreatorService;
   }
 
+  uploadFiles($event) {
+    super.uploadFiles($event);
+  }
+
   generateDataFiles(imgDatas: XmlImageData[], bboxes: BoundingBox[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
     return new Promise(resolve => {
       const xmlFiles = this.createXmlFiles(imgDatas, bboxes);

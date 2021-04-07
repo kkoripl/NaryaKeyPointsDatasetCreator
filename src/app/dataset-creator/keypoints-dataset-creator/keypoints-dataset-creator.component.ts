@@ -85,7 +85,7 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
     const newImagesNames = this.fileService.getNewFilesNames($event);
     this.enlargeImageTableData(newImagesNames, this.imagesTableData);
     this.enlargeElementsArray(newImagesNames.length, this.keyPoints);
-    this.enlargeElementsTableData(newImagesNames, this.keyPointsTableData);
+    this.enlargeElementsTableData(newImagesNames.length, this.keyPointsTableData);
     this.enlargeImageData(newImagesNames).then(() => {
       this.spinnerService.stop(spinnerRef);
     });
@@ -97,8 +97,8 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
     }
   }
 
-  protected enlargeElementsTableData(imagesNames: string[], keyPointsTableSource: MatTableDataSource<any>[]): void {
-    for (let i = this.keyPoints.length - imagesNames.length; i < this.keyPoints.length; i++) {
+  protected enlargeElementsTableData(newImages: number, keyPointsTableSource: MatTableDataSource<any>[]): void {
+    for (let i = this.keyPoints.length - newImages; i < this.keyPoints.length; i++) {
       const matTableData = new MatTableDataSource;
       MatTableUtilsService.setData(this.keyPoints[i], matTableData);
       keyPointsTableSource.push(matTableData);

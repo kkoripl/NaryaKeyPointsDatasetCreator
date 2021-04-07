@@ -79,6 +79,10 @@ export abstract class BaseFilesService {
     return filenames;
   }
 
+  getNewFiles(event: any): FileList {
+    return event.target.files;
+  }
+
   getFileNames(): string[] {
     const filenames = [];
     if (this.imageFiles === undefined) {

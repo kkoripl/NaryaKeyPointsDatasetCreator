@@ -1,7 +1,3 @@
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
-
 export const environment = {
   production: false,
   enableBboxPrediction: true,
@@ -11,8 +7,8 @@ export const environment = {
   defaults: {
     resizedImgWidth: 320,
     resizedImgHeight: 320,
-    visibleImgWidth: 900,
-    visibleImgHeight: 900,
+    visibleImgWidth: 1024,
+    visibleImgHeight: 1024,
     imgDirectory: 'JPEGImages',
     zipFile: 'data',
     statsFileHeader: 'Key point ID / Count\n'
@@ -27,7 +23,6 @@ export const environment = {
   instructionUrl: 'https://github.com/kkoripl/NaryaKeyPointsDatasetCreator/blob/master/README.md',
 
   validImageMimeTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/bmp'],
-
 
   xmlTags: {
     mainTag: 'annotation',

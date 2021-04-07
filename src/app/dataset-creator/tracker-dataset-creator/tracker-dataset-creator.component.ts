@@ -16,6 +16,8 @@ import {ScaleFactors} from '../../commons/models/interfaces/scale-factors';
 import {KonvaStageData} from '../../commons/models/interfaces/konva-stage-data';
 import {MatTableUtilsService} from '../../commons/services/utils/mat-table-utils.service';
 import {KeysUtilsService} from '../../commons/services/utils/keys-utils.service';
+import {TrainedModelService} from './services/trained-model-service';
+import {environment} from '../../../environments/environment';
 
 @Component({
   selector: 'app-tracker-dataset-creator',
@@ -36,8 +38,10 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   bboxPainter: TrackerBboxPainterService;
   notifications: NotificationService;
   spinnerService: SpinnerService;
+  trainedModelService: TrainedModelService;
 
   imageContainer = 'tracking-test-container';
+  enableBboxPrediction = environment.enableBboxPrediction;
   bboxDisplayedColumns: string[] = ['x', 'y', 'width', 'height', 'label', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   bboxesTableData: MatTableDataSource<any>[] = [];
@@ -56,12 +60,14 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   constructor(fileService: TrackerFileService,
               bboxPainter: TrackerBboxPainterService,
               notifications: NotificationService,
-              spinnerService: SpinnerService) {
+              spinnerService: SpinnerService,
+              trainedModelService: TrainedModelService) {
     super();
     this.fileService = fileService;
     this.bboxPainter = bboxPainter;
     this.notifications = notifications;
     this.spinnerService = spinnerService;
+    this.trainedModelService = trainedModelService;
   }
 
   ngOnInit(): void {
@@ -84,10 +90,35 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     const newImagesNames = this.fileService.getNewFilesNames(event);
     this.enlargeImageTableData(newImagesNames, this.imagesTableData);
     this.enlargeElementsArray(newImagesNames.length, this.bboxes);
-    this.enlargeElementsTableData(newImagesNames, this.bboxesTableData);
-    this.enlargeImageData(newImagesNames).then(() => {
+    this.enlargeElementsTableData(newImagesNames.length, this.bboxesTableData);
+    if (this.enableBboxPrediction) {
+      this.getPredictedBboxes(event)
+        .then(() => this.spinnerService.stop(spinnerRef));
+    } else {
       this.spinnerService.stop(spinnerRef);
-    });
+    }
+  }
+
+  protected enlargeElementsArray(imagesCnt: number, bboxes: BoundingBox[][]): void {
+    for (let i = 0; i < imagesCnt; i++) {
+      bboxes.push([]);
+    }
+  }
+
+  protected enlargeElementsTableData(newImages: number, bboxesTableSource: MatTableDataSource<any>[]): void {
+    for (let i = this.bboxes.length - newImages; i < this.bboxes.length; i++) {
+      const matTableData = new MatTableDataSource;
+      MatTableUtilsService.setData(this.bboxes[i], matTableData);
+      bboxesTableSource.push(matTableData);
+    }
+  }
+
+  protected async enlargeImageData(imagesNames: string[]) {
+    const startIdx = this.imgData.length;
+    for (let i = 0; i < imagesNames.length; i++) {
+      const data = await this.makeImgData(imagesNames[i], (startIdx + i));
+      this.imgData.push(data);
+    }
   }
 
   protected makeImgData(imageName: string, imageIdx: number): Promise<XmlImageData> {
@@ -108,26 +139,34 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     });
   }
 
-  protected enlargeElementsArray(imagesCnt: number, bboxes: BoundingBox[][]): void {
-    for (let i = 0; i < imagesCnt; i++) {
-      bboxes.push([]);
-    }
+  private getPredictedBboxes(event): Promise<any> {
+    return new Promise((resolve => {
+      this.trainedModelService.sendImageToPrediction(this.fileService.getNewFiles(event), this.resizedImgDimension)
+        .subscribe((imgsBboxes) => {
+          this.addPredictedBboxes(imgsBboxes);
+          resolve();
+        }, error => {
+          this.notifications.showError('Error getting predictions', 'Look into console for details');
+          console.log('ERROR DURING PREDICTIONS:');
+          console.log(error);
+          resolve();
+        });
+    }));
   }
 
-  protected enlargeElementsTableData(imagesNames: string[], bboxesTableSource: MatTableDataSource<any>[]): void {
-    for (let i = this.bboxes.length - imagesNames.length; i < this.bboxes.length; i++) {
-      const matTableData = new MatTableDataSource;
-      MatTableUtilsService.setData(this.bboxes[i], matTableData);
-      bboxesTableSource.push(matTableData);
-    }
-  }
-
-  protected async enlargeImageData(imagesNames: string[]) {
-    const startIdx = this.imgData.length;
-    for (let i = 0; i < imagesNames.length; i++) {
-      const data = await this.makeImgData(imagesNames[i], (startIdx + i));
-      this.imgData.push(data);
-    }
+  private addPredictedBboxes(imgsBboxes: any) {
+    const scaleFactors: ScaleFactors = {
+      width: this.visibleImgDimension.width / this.resizedImgDimension.width, height: this.visibleImgDimension.height / this.resizedImgDimension.height
+    };
+    const imgTableData = this.imagesTableData.data;
+    imgsBboxes.forEach(imgBboxes => {
+      const imgId = imgTableData.findIndex((data: any) => data.name === imgBboxes.image);
+      imgBboxes.bboxes.forEach(bbox => {
+        const newBbox = new BoundingBox(bbox.x, bbox.y, bbox.width, bbox.height, scaleFactors);
+        newBbox.label = bbox.label[0].toUpperCase() + bbox.label.substr(1).toLowerCase();
+        this.addNewBbox(newBbox, imgId);
+      });
+    });
   }
 
   getBboxData(imageIdx: number): MatTableDataSource<any> {
@@ -147,22 +186,26 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     this.resetExpanded();
   }
 
-  addNewBbox(bbox: BoundingBox, imageIdx: number): void {
+  private addNewBbox(bbox: BoundingBox, imageIdx: number): void {
     if (this.selectedBbox && this.selectedBbox.label === undefined) {
       this.notifications.showError('Finish creating bounding box', 'Before changing to other bounding box, add label to last one.');
     } else {
       this.bboxes[imageIdx].push(bbox);
       MatTableUtilsService.setData(this.bboxes[imageIdx], this.bboxesTableData[imageIdx]);
       this.selectedBbox = bbox;
-      this.drawUserBboxes(this.bboxes[imageIdx]);
     }
+  }
+
+  addNewBboxAndDrawIt(bbox: BoundingBox, imageIdx: number) {
+    this.addNewBbox(bbox, imageIdx);
+    this.drawUserBboxes(this.bboxes[imageIdx]);
   }
 
   private finishAddingBbox(){
     if (this.bboxPainter.getSelectionLayer()) {
       this.bboxPainter.finishCreatingBbox(this.bboxPainter.getSelectionLayer(),
                                           this.bboxPainter.getScaleFactors(),
-                            (bbox: BoundingBox) => {if (bbox) {this.addNewBbox(bbox, this.expandedImageId); }});
+                            (bbox: BoundingBox) => {if (bbox) {this.addNewBboxAndDrawIt(bbox, this.expandedImageId); }});
     }
   }
 
@@ -177,10 +220,13 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
 
   generateData(): void {
     const spinnerRef = this.spinnerService.start('Generating data...');
-    this.fileService.generateDataFiles(this.imgData, this.bboxes, this.zipFileName, this.imgDirectory)
+    this.enlargeImageData(this.fileService.getFileNames())
       .then(() => {
-        this.spinnerService.stop(spinnerRef);
-      });
+            this.fileService.generateDataFiles(this.imgData, this.bboxes, this.zipFileName, this.imgDirectory)
+              .then(() => {
+                    this.spinnerService.stop(spinnerRef);
+              });
+    });
   }
 
   missingData(): boolean {

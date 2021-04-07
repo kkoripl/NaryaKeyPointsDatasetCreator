@@ -1,6 +1,8 @@
 export const environment = {
   production: true,
+  enableBboxPrediction: false,
   idTemplateImage: 'pitch.png',
+  apiUrl: 'http://127.0.0.1:5000',
 
   defaults: {
     resizedImgWidth: 320,
