@@ -6,7 +6,6 @@ import {ImageDimension} from '../commons/models/interfaces/image-dimension';
 import {DatasetElement} from '../commons/models/classes/dataset-element';
 
 export abstract class DatasetCreatorComponent {
-  resizedImgDimension: ImageDimension = {width: environment.defaults.resizedImgWidth, height: environment.defaults.resizedImgHeight};
   visibleImgDimension: ImageDimension = {width: environment.defaults.visibleImgWidth, height: environment.defaults.visibleImgHeight};
   expandedImage: any;
   expandedImageId: number;
@@ -18,8 +17,6 @@ export abstract class DatasetCreatorComponent {
   zipFileName = environment.defaults.zipFile;
   imageContainer = environment.containers.image;
   resizeContainer = environment.containers.resize;
-
-  instructionUrl = environment.instructionUrl;
 
   abstract validateAndUpload($event): void;
   protected abstract uploadImages($event): void;
@@ -89,9 +86,5 @@ export abstract class DatasetCreatorComponent {
   protected resetExpanded(): void {
     this.expandedImage = undefined;
     this.expandedImageId = undefined;
-  }
-
-  navigateToInstruction(): void {
-    window.open(this.instructionUrl, '_blank');
   }
 }

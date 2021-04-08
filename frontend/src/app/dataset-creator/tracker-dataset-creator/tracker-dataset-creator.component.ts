@@ -41,7 +41,10 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   trainedModelService: TrainedModelService;
 
   imageContainer = 'tracking-test-container';
+  resizedImgDimension: ImageDimension = environment.defaults.resizedImgSize.tracker;
   enableBboxPrediction = environment.enableBboxPrediction;
+  instructionUrl = environment.instructionUrls.tracker;
+
   bboxDisplayedColumns: string[] = ['x', 'y', 'width', 'height', 'label', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   bboxesTableData: MatTableDataSource<any>[] = [];
@@ -290,5 +293,9 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
 
   protected resetSelection(): void {
     this.selectedBbox = undefined;
+  }
+
+  navigateToInstruction(): void {
+    window.open(this.instructionUrl, '_blank');
   }
 }

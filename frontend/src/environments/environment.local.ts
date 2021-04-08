@@ -5,8 +5,16 @@ export const environment = {
   apiUrl: 'http://127.0.0.1:5000',
 
   defaults: {
-    resizedImgWidth: 320,
-    resizedImgHeight: 320,
+    resizedImgSize: {
+      keypoints: {
+        width: 320,
+        height: 320
+      },
+      tracker: {
+        width: 512,
+        height: 512
+      }
+    },
     visibleImgWidth: 1024,
     visibleImgHeight: 1024,
     imgDirectory: 'JPEGImages',
@@ -20,7 +28,10 @@ export const environment = {
     resize: 'resizeContainer',
   },
 
-  instructionUrl: 'https://github.com/kkoripl/NaryaKeyPointsDatasetCreator/blob/master/README.md',
+  instructionUrls: {
+    keypoints: 'https://github.com/kkoripl/NaryaKeyPointsDatasetCreator/blob/master/docs/keypoints-creator-instruction.md',
+    tracker: 'https://github.com/kkoripl/NaryaKeyPointsDatasetCreator/blob/master/docs/tracker-creator-instruction.md',
+  },
 
   validImageMimeTypes: ['image/png', 'image/jpg', 'image/jpeg', 'image/pjpeg', 'image/bmp'],
 

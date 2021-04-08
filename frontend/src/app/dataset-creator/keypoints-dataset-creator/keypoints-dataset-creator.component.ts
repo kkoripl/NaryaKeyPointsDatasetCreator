@@ -38,8 +38,11 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
   notifications: NotificationService;
   spinnerService: SpinnerService;
 
+  resizedImgDimension: ImageDimension = environment.defaults.resizedImgSize.keypoints;
   templateImgDimension: ImageDimension = {width: environment.templateImg.width, height: environment.templateImg.height};
   templateContainer = environment.containers.template;
+  instructionUrl = environment.instructionUrls.keypoints;
+
 
   keyPointsDisplayedColumns: string[] = ['id', 'x', 'y', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
@@ -263,5 +266,9 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
 
   protected resetSelection(): void {
     this.selectedKeyPoint = undefined;
+  }
+
+  navigateToInstruction(): void {
+    window.open(this.instructionUrl, '_blank');
   }
 }
