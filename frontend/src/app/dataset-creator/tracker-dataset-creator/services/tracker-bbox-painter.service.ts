@@ -98,7 +98,7 @@ export class TrackerBboxPainterService extends KonvaService {
     }
     this.bboxesLayer = this.createLayer(this.bboxLayerConfig);
 
-    bboxes.forEach((bbox: BoundingBox) => {
+    bboxes.filter((bbox: BoundingBox) => bbox.visible).forEach((bbox: BoundingBox) => {
       this.setupConfigForFinishedBboxes(this.userBboxConfig, bbox);
       const bboxRect = this.createRect(this.userBboxConfig);
 
@@ -110,6 +110,7 @@ export class TrackerBboxPainterService extends KonvaService {
       bboxRect.on(KonvaEvent.MOUSE_UP, () => selectionRect.fire(KonvaEvent.MOUSE_UP));
       bboxesRects.push(bboxRect);
     });
+
 
     this.addElementsToLayer(this.bboxesLayer, bboxesRects);
     this.addToStage(this.imageStage, this.bboxesLayer);

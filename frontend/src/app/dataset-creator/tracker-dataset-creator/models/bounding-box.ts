@@ -10,6 +10,7 @@ export class BoundingBox extends DatasetElement {
   height: number;
   scaleFactors: ScaleFactors;
   label: string = BoundingBoxLabel.PLAYER;
+  visible = true;
 
   constructor(x: number, y: number, width: number, height: number, scaleFactors: ScaleFactors) {
     super();

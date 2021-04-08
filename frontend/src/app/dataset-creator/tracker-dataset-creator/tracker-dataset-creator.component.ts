@@ -45,12 +45,13 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   enableBboxPrediction = environment.enableBboxPrediction;
   instructionUrl = environment.instructionUrls.tracker;
 
-  bboxDisplayedColumns: string[] = ['x', 'y', 'width', 'height', 'label', 'actions'];
+  bboxDisplayedColumns: string[] = ['x', 'y', 'width', 'height', 'label', 'visibility', 'actions'];
   imagesDisplayedColumns: string[] = ['Image file name' , 'Actions'];
   bboxesTableData: MatTableDataSource<any>[] = [];
 
   bboxes: BoundingBox[][] = [];
   selectedBbox: BoundingBox;
+  allVisibility = true;
 
   @HostListener('document:keypress', ['$event']) keyboardEventsHandler($event: KeyboardEvent): void {
     const key = $event.key;
@@ -201,7 +202,7 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
 
   addNewBboxAndDrawIt(bbox: BoundingBox, imageIdx: number) {
     this.addNewBbox(bbox, imageIdx);
-    this.drawUserBboxes(this.bboxes[imageIdx]);
+    this.drawUserBboxes(imageIdx);
   }
 
   private finishAddingBbox(){
@@ -218,7 +219,7 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
       this.resetSelection();
     }
     MatTableUtilsService.setData(this.bboxes[imageIdx], this.bboxesTableData[imageIdx]);
-    this.drawUserBboxes(this.bboxes[imageIdx]);
+    this.drawUserBboxes(imageIdx);
   }
 
   generateData(): void {
@@ -246,7 +247,7 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
       .then((url: string) => {
         this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension)
           .then(() => {
-            this.drawUserBboxes(this.bboxes[imageRowIdx]);
+            this.drawUserBboxes(imageRowIdx);
             this.scrollToExpanded();
           });
       });
@@ -271,8 +272,8 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     }));
   }
 
-  private drawUserBboxes(bboxes: BoundingBox[]): void {
-    this.bboxPainter.drawBoundingBoxes(bboxes);
+  public drawUserBboxes(imageIdx: number): void {
+    this.bboxPainter.drawBoundingBoxes(this.bboxes[imageIdx]);
   }
 
   protected scrollToExpanded(): void {
@@ -289,6 +290,11 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     if (this.selectedBbox !== bbox) {
       this.selectedBbox = bbox;
     }
+  }
+
+  changeAllVisibility(visibility: boolean): void {
+    this.bboxes[this.expandedImageId].forEach(bbox => bbox.visible = visibility);
+    this.drawUserBboxes(this.expandedImageId);
   }
 
   protected resetSelection(): void {

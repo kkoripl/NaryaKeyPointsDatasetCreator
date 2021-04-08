@@ -19,6 +19,18 @@ div.main {
   width: 100%;
 }
 
+.w-40 {
+  width: 40px
+}
+
+.w-80 {
+  width: 80px
+}
+
+.th-center {
+  text-align: center;
+}
+
 table.main {
   width: 90%;
   align-self: center;
