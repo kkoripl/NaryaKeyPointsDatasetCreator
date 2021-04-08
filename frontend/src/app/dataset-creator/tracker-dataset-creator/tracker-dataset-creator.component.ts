@@ -234,7 +234,7 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   }
 
   missingData(): boolean {
-    return (this.imgData.length === 0
+    return (this.imagesTableData.data.length === 0
       || this.resizedImgDimension.width === undefined || this.resizedImgDimension.height === undefined
       || this.imgDirectory === undefined || ArraysUtilsService.count2dElements(this.bboxes) === 0
       || this.bboxes.filter((bboxes1d: []) =>

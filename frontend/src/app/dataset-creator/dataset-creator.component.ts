@@ -43,7 +43,7 @@ export abstract class DatasetCreatorComponent {
   }
 
   imagesLoadedAlready(): boolean {
-    return (this.imgData.length !== 0);
+    return (this.imagesTableData.data.length !== 0);
   }
 
   protected setExpandedImage(imageRowData: any, imageRowId: number): void {
