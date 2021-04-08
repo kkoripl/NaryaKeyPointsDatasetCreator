@@ -241,12 +241,6 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
     });
   }
 
-  animationDone($event) {
-    if ($event.toState === 'expanded' && this.expandedImageId !== undefined) {
-      this.scrollToExpanded();
-    }
-  }
-
   protected scrollToExpanded(): void {
     const expandedElement = document.getElementById(this.imageContainer + this.expandedImageId);
     expandedElement.scrollIntoView(true);

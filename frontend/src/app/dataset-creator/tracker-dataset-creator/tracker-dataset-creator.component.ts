@@ -248,7 +248,6 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
         this.drawPicture((this.imageContainer + imageRowIdx), url, this.visibleImgDimension, this.resizedImgDimension)
           .then(() => {
             this.drawUserBboxes(imageRowIdx);
-            this.scrollToExpanded();
           });
       });
     this.setExpandedImage(imageRowData, imageRowIdx);
