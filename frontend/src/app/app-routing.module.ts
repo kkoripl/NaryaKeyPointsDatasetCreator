@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {KeyPointsDatasetCreatorComponent} from './dataset-creator/keypoints-dataset-creator/keypoints-dataset-creator.component';
 import {MainPageComponent} from './main-page-component/main-page.component';
 import {TrackerDatasetCreatorComponent} from './dataset-creator/tracker-dataset-creator/tracker-dataset-creator.component';

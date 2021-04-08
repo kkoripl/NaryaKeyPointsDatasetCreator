@@ -99,6 +99,9 @@
           "configurations": {
             "production": {
               "browserTarget": "narya-key-points-dataset-creator:build:production"
+            },
+            "local": {
+              "browserTarget": "narya-key-points-dataset-creator:build:local"
             }
           }
         },
@@ -147,6 +150,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "narya-key-points-dataset-creator:serve:production"
+            },
+            "local": {
+              "devServerTarget": "narya-key-points-dataset-creator:serve:local"
             }
           }
         }
