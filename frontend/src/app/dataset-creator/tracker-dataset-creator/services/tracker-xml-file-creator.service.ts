@@ -12,6 +12,7 @@ export class TrackerXmlFileCreatorService extends XmlFileBaseCreatorService{
     xmlWriter
       .startElement(this.bboxesTags.object)
         .writeElement(this.bboxesTags.label, elementData.label)
+        .writeElement(this.bboxesTags.difficult, this.bboxesTags.difficultDefault)
         .startElement(this.bboxesTags.boundingBox)
           .writeElement(this.bboxesTags.xmin, elementData.x)
           .writeElement(this.bboxesTags.ymin, elementData.y)

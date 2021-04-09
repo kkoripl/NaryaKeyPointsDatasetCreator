@@ -56,6 +56,8 @@ export const environment = {
     bbox: {
       object: 'object',
       label: 'name',
+      difficult: 'difficult',
+      difficultDefault: 0,
       boundingBox: 'bndbox',
       xmin: 'xmin',
       ymin: 'ymin',
