@@ -1,3 +1,8 @@
+**NOTE AT START** 
+VOCDetection, which is used underneath TrackerModel in Narya project, is setup to look only for .jpg images during training process! 
+This dataset creator is not changing extensions of loaded files, so one need to do it him or herself beforehand!
+
+
 ## Instruction
 - Setup final dimension of images - dimension, which would you use to train model on. Max: 512x512
 - Setup name of directory, where you'd put created by this generator images in.

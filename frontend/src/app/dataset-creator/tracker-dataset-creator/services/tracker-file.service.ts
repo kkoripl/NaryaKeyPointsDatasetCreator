@@ -44,6 +44,6 @@ export class TrackerFileService extends BaseFilesService {
   }
 
   private createSetFileContent(imgDatas: XmlImageData[]): string {
-    return imgDatas.map(imgData => imgData.filename).join('\n');
+    return imgDatas.map(imgData => imgData.getFilenameWoExtension()).join('\n');
   }
 }

@@ -12,6 +12,9 @@ All needed instructions are placed in docs directory.
 
 **Remember!** Sizes of images on the left side of a panel would be always 1024x1024 to make it easier to pick particular spots on the graphic. But the dimension, you see in upper left corner is mapped to the size your image would be resized to, which you picked in first point of this instruction (below). Due to calculations on dimensions, points you'd pick (keypoints or bounding boxes) can be misplaced on the preview a little (by pixel, two etc.) on the picture. They are 100% good in files though.
 
+**Trackings creator** 
+VOCDetection, which is used underneath TrackerModel in Narya project, is setup to look only for .jpg images during training process! 
+This dataset creator is not changing extensions of loaded files, so one need to do it him or herself beforehand! 
 
 ## Other sports
 It looks like a generator is useful also for other sports than football. You just need to modify it slightly.
