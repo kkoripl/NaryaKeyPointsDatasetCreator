@@ -14,7 +14,7 @@ All needed instructions are placed in docs directory.
 
 **Trackings creator** 
 VOCDetection, which is used underneath TrackerModel in Narya project, is setup to look only for .jpg images during training process! 
-This dataset creator is not changing extensions of loaded files, so one need to do it him or herself beforehand! 
+This dataset creator is changing extensions of loaded files to fit into this need! 
 
 ## Other sports
 It looks like a generator is useful also for other sports than football. You just need to modify it slightly.

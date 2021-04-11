@@ -1,6 +1,6 @@
 **NOTE AT START** 
-VOCDetection, which is used underneath TrackerModel in Narya project, is setup to look only for .jpg images during training process! 
-This dataset creator is not changing extensions of loaded files, so one need to do it him or herself beforehand!
+VOCDetection, which is used underneath TrackerModel in Narya project, is setup to look only for .jpg images during training process!
+This dataset creator is changing extensions of loaded files to fit into this need!
 
 
 ## Instruction

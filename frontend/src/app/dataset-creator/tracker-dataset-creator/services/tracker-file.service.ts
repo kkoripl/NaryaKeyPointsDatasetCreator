@@ -23,17 +23,20 @@ export class TrackerFileService extends BaseFilesService {
 
   generateDataFiles(imgDatas: XmlImageData[], bboxes: BoundingBox[][], zipFileName: string, imgDirectoryName: string): Promise<any> {
     return new Promise(resolve => {
-      const xmlFiles = this.createXmlFiles(imgDatas, bboxes);
-      const imgFiles = this.createImageFiles(imgDatas);
+      const xmlFiles = this.createXmlFiles(imgDatas, bboxes, 'jpg');
+      const imgFiles = this.createImageFiles(imgDatas, 'jpg');
       const setFileContent = this.createSetFileContent(imgDatas);
       ZipFileCreatorService.generateZip(xmlFiles, imgFiles, setFileContent, zipFileName, imgDirectoryName, 'set.txt')
         .then(() => resolve());
     });
   }
 
-  protected createXmlFiles(imgDatas: XmlImageData[], bboxes: BoundingBox[][]): XmlFile[] {
+  protected createXmlFiles(imgDatas: XmlImageData[], bboxes: BoundingBox[][], imgExtension: string = ''): XmlFile[] {
     const files = [];
     for (let i = 0; i < imgDatas.length ; i++) {
+      if (imgExtension) {
+        imgDatas[i].filename = imgDatas[i].getFilenameWoExtension() + '.' + imgExtension;
+      }
       files.push(this.createXmlFile(imgDatas[i], bboxes[i]));
     }
     return files;

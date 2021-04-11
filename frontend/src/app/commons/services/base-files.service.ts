@@ -95,10 +95,14 @@ export abstract class BaseFilesService {
     return filenames;
   }
 
-  protected createImageFiles(imageDatas: XmlImageData[]): ImgFile[] {
+  protected createImageFiles(imageDatas: XmlImageData[], fileExtension: string = ''): ImgFile[] {
     const imageFiles = [];
     for (const imageData of imageDatas) {
-      imageFiles.push(new ImgFile(imageData.filename, this.fromDataUrlToBlob(imageData.dataUrl)));
+      let imgName = imageData.filename;
+      if (fileExtension) {
+        imgName = imageData.getFilenameWoExtension() + '.' + fileExtension;
+      }
+      imageFiles.push(new ImgFile(imgName, this.fromDataUrlToBlob(imageData.dataUrl)));
     }
 
     return imageFiles;
