@@ -88,6 +88,26 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
     }
   }
 
+  uploadAnnotations($event): void {
+    const spinnerRef = this.spinnerService.start('Loading annotations...');
+    this.fileService.uploadAnnotations($event, this.visibleImgDimension, this.resizedImgDimension)
+      .then((imagesBboxes) => {
+        this.addAnnotations(imagesBboxes);
+        this.spinnerService.stop(spinnerRef);
+      });
+  }
+
+  private addAnnotations(imagesBboxes: any[]){
+    const imagesData = this.imagesTableData.data;
+    for (const imageBboxes of imagesBboxes) {
+      const imageIdx = imagesData.findIndex((imageData: any) => imageData.name === imageBboxes.imgName);
+      if (imageIdx === -1) { continue; }
+      for (const bbox of imageBboxes.bboxes) {
+        this.addNewBbox(bbox, imageIdx);
+      }
+    }
+  }
+
   protected uploadImages(event): void {
     const spinnerRef = this.spinnerService.start('Loading pictures...');
     this.fileService.uploadFiles(event);

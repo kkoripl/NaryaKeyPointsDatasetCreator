@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~9.1.9",
     "@angular/platform-browser-dynamic": "~9.1.9",
     "@angular/router": "~9.1.9",
+    "fast-xml-parser": "^3.19.0",
     "file-saver": "^2.0.5",
     "jszip": "^3.5.0",
     "konva": "^7.2.2",

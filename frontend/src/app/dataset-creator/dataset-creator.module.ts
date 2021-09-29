@@ -26,6 +26,7 @@ import {TrackerXmlFileCreatorService} from './tracker-dataset-creator/services/t
 import {TrainedModelService} from './tracker-dataset-creator/services/trained-model-service';
 import {HttpClientModule} from '@angular/common/http';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {TrackerXmlParserService} from './tracker-dataset-creator/services/tracker-xml-parser.service';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
     KeypointsXmlFileCreatorService,
     TrackerBboxPainterService,
     TrackerXmlFileCreatorService,
+    TrackerXmlParserService,
     TrackerFileService,
     TrainedModelService
   ],

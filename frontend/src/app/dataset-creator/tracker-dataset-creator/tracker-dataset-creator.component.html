@@ -2,6 +2,8 @@
   <button mat-button type="button" (click)="generateData()" disabled="{{missingData()}}">Generate data file</button>
   <input style="display: none" type="file" multiple (change)="validateAndUpload($event)" #fileInput>
   <button mat-button type="button" (click)="fileInput.click()">Select images</button>
+  <input style="display: none" type="file" multiple (change)="uploadAnnotations($event)" #annotationsInput>
+  <button mat-button type="button" (click)="annotationsInput.click()">Select annotations</button>
   <button mat-button type="button" (click)="navigateToInstruction()">Instruction</button>
   <div class="spacer"></div>
   <mat-form-field class="input-headline">

@@ -14,6 +14,7 @@ import {ArraysUtilsService} from './services/utils/arrays-utils.service';
 import {ZipFileCreatorService} from './services/zip-file-creator.service';
 import {MatTableUtilsService} from './services/utils/mat-table-utils.service';
 import {KeysUtilsService} from './services/utils/keys-utils.service';
+import {XmlBaseParserService} from './services/xml-base-parser.service';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {KeysUtilsService} from './services/utils/keys-utils.service';
     NumbersUtilsService,
     ArraysUtilsService,
     MatTableUtilsService,
-    KeysUtilsService
+    KeysUtilsService,
+    XmlBaseParserService
   ]
 })
 export class CommonsModule { }
