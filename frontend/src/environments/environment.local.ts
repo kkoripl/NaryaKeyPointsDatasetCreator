@@ -15,8 +15,10 @@ export const environment = {
         height: 512
       }
     },
-    visibleImgWidth: 1024,
-    visibleImgHeight: 1024,
+    visibleImgSize: {
+      width: 1024,
+      height: 1024
+    },
     imgDirectory: 'JPEGImages',
     zipFile: 'data',
     statsFileHeader: 'Key point ID / Count\n'

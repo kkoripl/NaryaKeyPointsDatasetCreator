@@ -6,7 +6,7 @@ import {ImageDimension} from '../commons/models/interfaces/image-dimension';
 import {DatasetElement} from '../commons/models/classes/dataset-element';
 
 export abstract class DatasetCreatorComponent {
-  visibleImgDimension: ImageDimension = {width: environment.defaults.visibleImgWidth, height: environment.defaults.visibleImgHeight};
+  visibleImgDimension: ImageDimension = environment.defaults.visibleImgSize;
   expandedImage: any;
   expandedImageId: number;
 
@@ -32,6 +32,7 @@ export abstract class DatasetCreatorComponent {
   protected abstract enlargeElementsArray(imagesCnt: number, elements: DatasetElement[][]): void;
   protected abstract enlargeElementsTableData(newImages: number, elementsTableSource: MatTableDataSource<any>[]): void;
   protected abstract async enlargeImageData(imagesNames: string[]);
+  protected abstract destroyStage();
 
   protected enlargeImageTableData(imagesNames: string[], imageTableData: MatTableDataSource<any>): void {
     const imgDetails = imageTableData.data;
@@ -80,6 +81,10 @@ export abstract class DatasetCreatorComponent {
   animationDone($event) {
     if ($event.toState === 'expanded' && this.expandedImageId !== undefined) {
       this.scrollToExpanded();
+    }
+
+    if ($event.toState === 'collapsed') {
+      this.destroyStage();
     }
   }
 

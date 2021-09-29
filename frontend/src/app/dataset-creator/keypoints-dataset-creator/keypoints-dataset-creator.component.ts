@@ -202,6 +202,10 @@ export class KeyPointsDatasetCreatorComponent extends DatasetCreatorComponent im
     }
   }
 
+  protected destroyStage() {
+    this.keyPointsPainter.destroyStage();
+  }
+
   protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): void {
     const scaleFactors: ScaleFactors = {
       width: visibleImgDim.width / resizedImgDim.width, height: visibleImgDim.height / resizedImgDim.height

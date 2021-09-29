@@ -14,6 +14,13 @@ export class KonvaService {
   protected imageStage: Konva.Stage;
   protected resizeStage: Konva.Stage;
 
+  public destroyStage() {
+    if (this.imageStage) {
+      this.imageStage.destroyChildren();
+      this.imageStage.destroy();
+    }
+  }
+
   public getResizedDataUrl(pictureData: KonvaStageData): Promise<string> {
     return new Promise(resolve => {
       this.resizeStage = this.createStage(pictureData.containerName, pictureData.imageDimension);

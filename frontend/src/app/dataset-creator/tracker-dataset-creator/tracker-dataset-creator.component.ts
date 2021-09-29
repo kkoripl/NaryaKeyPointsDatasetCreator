@@ -35,7 +35,7 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   boundingBoxLabels = Object.values(BoundingBoxLabel);
 
   fileService: TrackerFileService;
-  bboxPainter: TrackerBboxPainterService;
+  // bboxPainter: TrackerBboxPainterService;
   notifications: NotificationService;
   spinnerService: SpinnerService;
   trainedModelService: TrainedModelService;
@@ -62,13 +62,13 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
   }
 
   constructor(fileService: TrackerFileService,
-              bboxPainter: TrackerBboxPainterService,
+              private bboxPainter: TrackerBboxPainterService,
               notifications: NotificationService,
               spinnerService: SpinnerService,
               trainedModelService: TrainedModelService) {
     super();
     this.fileService = fileService;
-    this.bboxPainter = bboxPainter;
+    // this.bboxPainter = bboxPainter;
     this.notifications = notifications;
     this.spinnerService = spinnerService;
     this.trainedModelService = trainedModelService;
@@ -251,6 +251,10 @@ export class TrackerDatasetCreatorComponent extends DatasetCreatorComponent impl
           });
       });
     this.setExpandedImage(imageRowData, imageRowIdx);
+  }
+
+  protected destroyStage() {
+    this.bboxPainter.destroyStage();
   }
 
   protected drawPicture(containerName: string, imageUrl: string, visibleImgDim: ImageDimension, resizedImgDim: ImageDimension): Promise<any> {

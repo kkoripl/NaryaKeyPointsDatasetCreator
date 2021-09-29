@@ -19,8 +19,10 @@ export const environment = {
         height: 512
       }
     },
-    visibleImgWidth: 1024,
-    visibleImgHeight: 1024,
+    visibleImgSize: {
+      width: 1024,
+      height: 1024
+    },
     imgDirectory: 'JPEGImages',
     zipFile: 'data',
     statsFileHeader: 'Key point ID / Count\n'
@@ -137,6 +139,7 @@ export const environment = {
         fill: 'red',
         stroke: 'black',
         strokeWidth: 1,
+        shadowForStrokeEnabled: false
       },
       userBboxConfig: {
         x: -1,
@@ -144,11 +147,16 @@ export const environment = {
         width: 0,
         height: 0,
         strokeWidth: 2,
-        stroke: 'pink'
+        stroke: 'pink',
+        perfectDrawEnabled: false,
+        shadowForStrokeEnabled: false
       },
       bboxHelperLinesConfig: {
         strokeWidth: 1,
-        stroke: 'pink'
+        stroke: 'pink',
+        listening: false,
+        perfectDrawEnabled: false,
+        shadowForStrokeEnabled: false
       },
       templateSelectedConfig: {
         id: -1,

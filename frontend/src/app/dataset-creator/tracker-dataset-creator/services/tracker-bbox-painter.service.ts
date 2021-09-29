@@ -19,7 +19,7 @@ export class TrackerBboxPainterService extends KonvaService {
   private bboxTransformerName = 'bboxTransformer';
   private visibleBboxName = 'visibleBbox';
   private selectionBboxName = 'selectionBbox';
-  private bboxLayerConfig = {id: this.bboxLayerName};
+  private bboxLayerConfig = {id: this.bboxLayerName, listening: false};
   private selectionLayerConfig = {id: this.selectionLayerName};
   private bboxTransformerConfig = {id: this.bboxTransformerName, rotateEnabled: false, anchorSize: 6};
   private coordsTextConfig = environment.draw.texts.coordsConfig;
@@ -39,6 +39,7 @@ export class TrackerBboxPainterService extends KonvaService {
 
   drawPicture(stageData: KonvaStageData, bboxDataCallback: BoundingBoxDataTaker): Promise<any> {
     return new Promise(resolve => {
+      console.log('draw picture');
       if (this.imageStage) {
         this.imageStage.destroyChildren();
         this.imageStage.destroy();
@@ -71,10 +72,8 @@ export class TrackerBboxPainterService extends KonvaService {
         const bboxSelectionRect = this.setupCreatingBoundingBoxOnImage(image, this.selectionLayer, this.userBboxConfig,
           stageData.scaleFactors, bboxDataCallback);
 
-        // all shapes above image need to be 'transient' and let events fired on them being transported to image itself
+        // bbox selection rect above image need to be 'transient' and let mouse move events fire on it being transported to image itself
         bboxSelectionRect.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-        helperHorizontalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
-        helperVerticalLine.on(KonvaEvent.MOUSE_MOVE, () => image.fire(KonvaEvent.MOUSE_MOVE));
 
         this.addElementsToLayer(this.mainLayer, [image, helperVerticalLine, helperHorizontalLine, label]);
         this.addToLayer(this.selectionLayer, bboxSelectionRect);
@@ -88,9 +87,9 @@ export class TrackerBboxPainterService extends KonvaService {
   }
 
   drawBoundingBoxes(bboxes: BoundingBox[]): void {
+    console.log('draw bboxes');
+
     const bboxesRects: Konva.Rect[] = [];
-    const mainImage: Konva.Image = this.findOneByType(this.mainLayer, KonvaShapeType.IMAGE);
-    const selectionRect: Konva.Rect = this.findOneById(this.selectionLayer, this.selectionBboxName);
 
     if (this.bboxesLayer) {
       this.bboxesLayer.destroyChildren();
@@ -101,13 +100,7 @@ export class TrackerBboxPainterService extends KonvaService {
     bboxes.filter((bbox: BoundingBox) => bbox.visible).forEach((bbox: BoundingBox) => {
       this.setupConfigForFinishedBboxes(this.userBboxConfig, bbox);
       const bboxRect = this.createRect(this.userBboxConfig);
-
-      // Bounding box rectangles are on separate layer from main image, but they need to be 'transient' for user actions
-      // Konva can't do so, that's why we propagate rectangle events to image
-      bboxRect.on(KonvaEvent.MOUSE_DOWN, () => mainImage.fire(KonvaEvent.MOUSE_DOWN));
-      bboxRect.on(KonvaEvent.MOUSE_MOVE, () => mainImage.fire(KonvaEvent.MOUSE_MOVE));
-      bboxRect.on(KonvaEvent.CLICK, () => mainImage.fire(KonvaEvent.CLICK));
-      bboxRect.on(KonvaEvent.MOUSE_UP, () => selectionRect.fire(KonvaEvent.MOUSE_UP));
+      bboxRect.listening(false);
       bboxesRects.push(bboxRect);
     });
 
@@ -117,9 +110,8 @@ export class TrackerBboxPainterService extends KonvaService {
 
     // Layer with bounding boxes transformer need to be on top, otherwise transformer would be not able to be modified
     this.selectionLayer.moveToTop();
-
-    this.selectionLayer.draw();
-    this.bboxesLayer.draw();
+    this.selectionLayer.batchDraw();
+    this.bboxesLayer.batchDraw();
   }
 
   private setupCreatingBoundingBoxOnImage(image: Konva.Image, layer: Konva.Layer,
@@ -142,7 +134,7 @@ export class TrackerBboxPainterService extends KonvaService {
 
       this.initiateBboxPosition(bboxLeftUpper, bboxRightLower);
       this.makeVisibleButOfZeroSize(bboxSelectionRect);
-      layer.draw();
+      layer.batchDraw();
     });
 
     // drawing / updating bbox
@@ -194,7 +186,7 @@ export class TrackerBboxPainterService extends KonvaService {
       }
 
       this.finishCreatingBbox(layer, scaleFactors, bboxDataCallback);
-      layer.draw();
+      layer.batchDraw();
     });
 
     return bboxSelectionRect;
@@ -246,12 +238,12 @@ export class TrackerBboxPainterService extends KonvaService {
   }
 
   private updateHorizontalLinePosition(line: Konva.Line, mousePosition: MousePosition, endX: number): void {
-    line.points([0, mousePosition.y, mousePosition.x, mousePosition.y, endX, mousePosition.y]);
+    line.points([0, mousePosition.y, endX, mousePosition.y]);
     line.visible(true);
   }
 
   private updateVerticalLinePosition(line: Konva.Line, mousePosition: MousePosition, endY: number): void {
-    line.points([mousePosition.x, 0, mousePosition.x, mousePosition.y, mousePosition.x, endY]);
+    line.points([mousePosition.x, 0, mousePosition.x, endY]);
     line.visible(true);
   }
 
